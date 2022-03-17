@@ -253,7 +253,7 @@ public class DBUtil {
 		if (firstName == null || lastName == null)
 			return null;
 		
-		User user = new User();
+		User user = new User(username, firstName, lastName);
 		
 		if (roleString.equalsIgnoreCase("admin"))
 			user.setRole(Role.Admin);

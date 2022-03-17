@@ -34,16 +34,14 @@ public class User implements java.io.Serializable{
 	public static enum Role{User, Admin};
 	
 	private String username, firstName, lastName;
-	private String passwd;
-
 	private Role role = Role.User;
+	
 	private Date lastAccessDate = null;
 	
-	public User() {
+	public User(String username, String firstName, String lastName) {
 		this.username = username;
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.passwd = passwd;
 		lastAccessDate = new Date();
 	}
 	
@@ -66,21 +64,15 @@ public class User implements java.io.Serializable{
 	public String getUsername() {
 		return username;
 	}
-	public void setUsername(String username) { this.username = username; }
 
 	public String getFirstName() {
 		return firstName;
 	}
-	public void setFirstName(String firstName) { this.firstName = firstName; }
 
 	public String getLastName() {
 		return lastName;
 	}
-	public void setLastName(String lastName) { this.lastName = lastName; }
-
-	public String getPasswd() { return passwd;	}
-	public void setPasswd(String passwd) { this.passwd = passwd; }
-
+	
 	public Account[] getAccounts(){
 		try {
 			return DBUtil.getAccounts(username);
