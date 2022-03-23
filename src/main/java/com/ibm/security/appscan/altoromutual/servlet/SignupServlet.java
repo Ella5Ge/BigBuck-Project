@@ -24,17 +24,24 @@ public class SignupServlet extends HttpServlet {
             String role = request.getParameter("new_role");
 
             String error = DBUtil.addUser(username, passwd, firstName, lastName, role);
-            if (error != null)
-                message = "Error: Failed to add new user into database";
+            if (error != null) {
+                message = "An error has occurred. Please try again later";
+                throw new Exception(message);
+            }
+
+            String error2 = DBUtil.addAccount(username, "cash");
+            if (error2 != null) {
+                message = "An error has occurred. Please try again later";
+                throw new Exception(message);
+            }
 
             message = "Successful Sign up!";
         } catch (Exception e2) {
             request.getSession(true).setAttribute("loginError", e2.getLocalizedMessage());
             response.sendRedirect("signup.jsp");
             return;
-        } finally {
-            response.sendRedirect("login.jsp");
-            return;
         }
+        request.getSession(true).setAttribute("loginError", message);
+        response.sendRedirect("login.jsp");
     }
 }

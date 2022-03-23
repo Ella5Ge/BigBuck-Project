@@ -16,6 +16,15 @@
         <div class="fl" style="width: 99%;">
 
             <h1>Online Banking Sign Up</h1>
+            <p><span id="_ctl0__ctl0_Content_Main_message" style="color:#FF0066;font-size:12pt;font-weight:bold;">
+                <%
+                    java.lang.String error = (String)request.getSession(true).getAttribute("loginError");
+                    if (error != null && error.trim().length() > 0){
+                        request.getSession().removeAttribute("loginError");
+                        out.print(error);
+                    }
+                %>
+            </span></p>
 
             <form action="SignupServlet" method="post" name="signup" id="signup" onsubmit="return (confirminput(signup));">
                 <table>
