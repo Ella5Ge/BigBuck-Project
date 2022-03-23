@@ -87,7 +87,7 @@
       function confirminput(myform) {
         if (myform.new_first.value.length && myform.new_last.value.length
                 && myform.new_uid.value.length && myform.new_passw.value.length
-                && myform.new_passw2.value.length) {
+                && myform.new_passw2.value.length && myform.new_passw.value == myform.new_passw2.value) {
           return (true);
         } else if (!(myform.new_first.value.length)) {
           myform.reset();
@@ -106,15 +106,16 @@
           myform.new_passw.focus();
           alert("You must enter a valid password");
           return (false);
-        } else {
+        } else if (!(myform.new_passw2.value.length)) {
           myform.new_passw2.focus();
           alert("You must re-confirm the password");
           return (false);
-        }
-        if (myform.new_passw.value !== myform.new_passw2.value){
+        } else if (myform.new_passw.value != myform.new_passw2.value){
           myform.new_passw2.focus();
           alert ("You must enter a valid password");
           return (false);
+        } else {
+
         }
       }
     </script>

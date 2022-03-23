@@ -486,7 +486,8 @@ public class DBUtil {
 			
 		}
 	}
-	
+
+
 	public static String addUser(String username, String password, String firstname, String lastname, String role) {
 		try {
 			Connection connection = getConnection();
@@ -497,6 +498,7 @@ public class DBUtil {
 			return e.toString();
 		}
 	}
+
 	
 	public static String changePassword(String username, String password) {
 		try {
@@ -506,7 +508,6 @@ public class DBUtil {
 			return null;
 		} catch (SQLException e){
 			return e.toString();
-			
 		}
 	}
 
