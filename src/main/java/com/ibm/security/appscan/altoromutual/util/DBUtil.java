@@ -497,6 +497,21 @@ public class DBUtil {
 			return e.toString();
 		}
 	}
+
+	public static boolean isValidUsername(String username){
+		try{
+			Connection connection = getConnection();
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) FROM PEOPLE WHERE USER_ID = '"+username+"'");
+			if (resultSet.next()){
+
+				if (resultSet.getInt(1) > 0)
+					return false;
+			}
+		} catch (SQLException e){
+		}
+		return true;
+	}
 	
 	public static String changePassword(String username, String password) {
 		try {
