@@ -1,78 +1,126 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: liwanting
+  Date: 3/22/22
+  Time: 5:29 PM
+  To change this template use File | Settings | File Templates.
+--%>
+
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
          pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html>
-
-<jsp:include page="header.jspf"/>
+<jsp:include page="/header.jspf"/>
 
 <div id="wrapper" style="width: 99%;">
     <jsp:include page="/toc.jspf"/>
     <td valign="top" colspan="3" class="bb">
         <div class="fl" style="width: 99%;">
 
-            <h1>Online Banking Signup</h1>
+            <h1>Online Banking Sign Up</h1>
 
-            <form action="admin/addUser" method="post" name="signup" id="signup" onsubmit="return (confirminput(signup));">
+            <form action="SignupServlet" method="post" name="signup" id="signup" onsubmit="return (confirminput(signup));">
                 <table>
                     <tr>
-                        <td>Username:</td>
-                        <td><input type="text" id="username" name="username" style="width: 150px;"></td>
+                        <td>
+                            Role:
+                        </td>
+                        <td>
+                            <select name="role" id="role" value="" style="width: 150px;">
+                                <option value="admin">Admin</option>
+                                <option value="user">User</option>
+                            </select>
+                        </td>
+                        <td>
+                        </td>
                     </tr>
                     <tr>
-                        <td>Lastname:</td>
-                        <td><input type="text" id="lastname" name="lastname" style="width: 150px;"></td>
+                        <td>
+                            First Name:
+                        </td>
+                        <td>
+                            <input type="text" id="new_first" name="new_first" value="" style="width: 150px;">
+                        </td>
+                        <td>
+                        </td>
                     </tr>
                     <tr>
-                        <td>Firstname:</td>
-                        <td><input type="text" id="firstname" name="firstname" style="width: 150px;"></td>
+                        <td>
+                            Last Name:
+                        </td>
+                        <td>
+                            <input type="text" id="new_last" name="new_last" style="width: 150px;">
+                        </td>
                     </tr>
                     <tr>
-                        <td>Password:</td>
-                        <td><input type="password" id="password1" name="password1" style="width: 150px;"></td>
+                        <td>
+                            Username:
+                        </td>
+                        <td>
+                            <input type="text" id="new_uid" name="new_uid" style="width: 150px;">
+                        </td>
                     </tr>
-
                     <tr>
-                        <td>Rewrite Password:</td>
-                        <td><input type="password" id="password2" name="password2" style="width: 150px;"></td>
+                        <td>
+                            Password:
+                        </td>
+                        <td>
+                            <input type="password" id="new_passw" name="new_passw" style="width: 150px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Re-confirmed Password:
+                        </td>
+                        <td>
+                            <input type="password" id="new_passw2" name="new_passw2" style="width: 150px;">
+                        </td>
                     </tr>
                     <tr>
                         <td></td>
-                        <td><input type="submit" name="btnSubmit" value="Signup"></tr>
+                        <td>
+                            <input type="submit" name="btnSubmit" value="Sign up">
+                        </td>
                     </tr>
                 </table>
             </form>
         </div>
         <script type="text/javascript">
             function confirminput(myform) {
-                if (myform.username.value.length && myform.lastname.value.length && myform.firstname.value.length && myform.password1.value.length) {
+                if (myform.new_first.value.length && myform.new_last.value.length
+                    && myform.new_uid.value.length && myform.new_passw.value.length
+                    && myform.new_passw2.value.length && myform.new_passw.value == myform.new_passw2.value) {
                     return (true);
-                } else if (!(myform.username.value.length)) {
+                } else if (!(myform.new_first.value.length)) {
                     myform.reset();
-                    myform.uid.focus();
-                    alert ("You must enter a valid username");
+                    myform.new_first.focus();
+                    alert ("You must enter a valid first name");
                     return (false);
-                } else if (!(myform.lastname.value.length)) {
-                    myform.lastname.focus();
-                    alert ("You must enter a valid lastname");
+                } else if (!(myform.new_last.value.length)) {
+                    myform.new_last.focus();
+                    alert ("You must enter a valid last name");
                     return (false);
-                } else if (!(myform.firstname.value.length)) {
-                    myform.firstname.focus();
-                    alert("You must enter a valid firstname");
+                } else if (!(myform.new_uid.value.length)) {
+                    myform.new_uid.focus();
+                    alert("You must enter a valid username");
                     return (false);
-                } else {
-                    myform.password1.focus();
+                } else if (!(myform.new_passw.value.length)) {
+                    myform.new_passw.focus();
+                    alert("You must enter a valid password");
+                    return (false);
+                } else if (!(myform.new_passw2.value.length)) {
+                    myform.new_passw2.focus();
+                    alert("You must re-confirm the password");
+                    return (false);
+                } else if (myform.new_passw.value != myform.new_passw2.value){
+                    myform.new_passw2.focus();
                     alert ("You must enter a valid password");
                     return (false);
-                }
-            }
-            function confirminput(myform) {
-                if (myform.password1.value != myform.password2.value) {
-                    alert ("You must enter the same password");
-                    return (false);
+                } else {
+
                 }
             }
         </script>
     </td>
 </div>
 
+<jsp:include page="/footer.jspf"/>
 
-<jsp:include page="footer.jspf"/>

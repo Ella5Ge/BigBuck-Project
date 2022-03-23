@@ -468,7 +468,7 @@ public class DBUtil {
 		try {
 			Connection connection = getConnection();
 			Statement statement = connection.createStatement();
-			statement.execute("INSERT INTO ACCOUNTS (USERID,ACCOUNT_NAME,BALANCE) VALUES ('"+username+"','"+acctType+"', 1000000)");
+			statement.execute("INSERT INTO ACCOUNTS (USERID,ACCOUNT_NAME,BALANCE) VALUES ('"+username+"','"+acctType+"', 0)");
 			return null;
 		} catch (SQLException e){
 			return e.toString();
@@ -486,18 +486,19 @@ public class DBUtil {
 			
 		}
 	}
-	
-	public static String addUser(String username, String password, String firstname, String lastname) {
+
+
+	public static String addUser(String username, String password, String firstname, String lastname, String role) {
 		try {
 			Connection connection = getConnection();
 			Statement statement = connection.createStatement();
-			statement.execute("INSERT INTO PEOPLE (USER_ID,PASSWORD,FIRST_NAME,LAST_NAME,ROLE) VALUES ('"+username+"','"+password+"', '"+firstname+"', '"+lastname+"','user')");
+			statement.execute("INSERT INTO PEOPLE (USER_ID,PASSWORD,FIRST_NAME,LAST_NAME,ROLE) VALUES ('"+username+"','"+password+"', '"+firstname+"', '"+lastname+"','"+role+"')");
 			return null;
 		} catch (SQLException e){
 			return e.toString();
-			
 		}
 	}
+
 	
 	public static String changePassword(String username, String password) {
 		try {
@@ -507,7 +508,6 @@ public class DBUtil {
 			return null;
 		} catch (SQLException e){
 			return e.toString();
-			
 		}
 	}
 
