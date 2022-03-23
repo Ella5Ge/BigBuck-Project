@@ -487,15 +487,14 @@ public class DBUtil {
 		}
 	}
 	
-	public static String addUser(String username, String password, String firstname, String lastname) {
+	public static String addUser(String username, String password, String firstname, String lastname, String role) {
 		try {
 			Connection connection = getConnection();
 			Statement statement = connection.createStatement();
-			statement.execute("INSERT INTO PEOPLE (USER_ID,PASSWORD,FIRST_NAME,LAST_NAME,ROLE) VALUES ('"+username+"','"+password+"', '"+firstname+"', '"+lastname+"','user')");
+			statement.execute("INSERT INTO PEOPLE (USER_ID,PASSWORD,FIRST_NAME,LAST_NAME,ROLE) VALUES ('"+username+"','"+password+"', '"+firstname+"', '"+lastname+"','"+role+"')");
 			return null;
 		} catch (SQLException e){
 			return e.toString();
-			
 		}
 	}
 	

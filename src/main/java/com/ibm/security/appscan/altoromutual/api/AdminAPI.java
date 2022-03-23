@@ -100,7 +100,7 @@ public class AdminAPI extends AltoroAPI {
 		String error = null;
 		
 		if (ServletUtil.getAppProperty("enableAdminFunctions").equalsIgnoreCase("true"))
-			error = DBUtil.addUser(username, password1, firstname, lastname);
+			error = DBUtil.addUser(username, password1, firstname, lastname, "user");
 		
 		if (error != null)
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\""+error+"\"}").build();

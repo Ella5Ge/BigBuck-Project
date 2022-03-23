@@ -77,7 +77,7 @@ public class AdminServlet extends HttpServlet {
 			}
 			
 			if (message == null){
-				String error = DBUtil.addUser(username, password1, firstname, lastname);
+				String error = DBUtil.addUser(username, password1, firstname, lastname, "user");
 				
 				if (error != null)
 					message = error;
