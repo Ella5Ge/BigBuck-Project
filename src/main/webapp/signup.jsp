@@ -123,8 +123,6 @@
                     myform.new_passw2.focus();
                     alert ("You must enter a valid password");
                     return (false);
-                } else {
-
                 }
             }
         </script>

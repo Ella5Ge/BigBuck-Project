@@ -23,6 +23,11 @@ public class SignupServlet extends HttpServlet {
             String passwd = request.getParameter("new_passw");
             String role = request.getParameter("new_role");
 
+            if (!DBUtil.isValidUsername(username)) {
+                message = "The username has been used. Please enter another.";
+                throw new Exception(message);
+            }
+
             String error = DBUtil.addUser(username, passwd, firstName, lastName, role);
             if (error != null) {
                 message = "An error has occurred. Please try again later";
