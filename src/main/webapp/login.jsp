@@ -68,6 +68,12 @@ IBM AltoroJ
 		          <input type="submit" name="btnSubmit" value="Login">
 		        </td>
 		      </tr>
+			  <tr>
+				  <td></td>
+				  <td>
+					  <a href="signup.jsp">Signup</a>
+				  </td>
+			  </tr>
 		  </table>
 		</form>
 		
