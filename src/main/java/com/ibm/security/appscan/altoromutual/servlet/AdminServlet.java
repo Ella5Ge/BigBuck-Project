@@ -79,8 +79,10 @@ public class AdminServlet extends HttpServlet {
 			if (message == null){
 				String error = DBUtil.addUser(username, password1, firstname, lastname);
 				
-				if (error != null)
+				if (error != null) {
 					message = error;
+				}
+				DBUtil.addAccount(username, "cash");
 			}
 			
 		}
