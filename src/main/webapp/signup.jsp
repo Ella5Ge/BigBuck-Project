@@ -34,8 +34,8 @@
                         </td>
                         <td>
                             <select name="role" id="role" value="" style="width: 150px;">
-                                <option value="admin">Admin</option>
                                 <option value="user">User</option>
+                                <option value="admin">Admin</option>
                             </select>
                         </td>
                         <td>

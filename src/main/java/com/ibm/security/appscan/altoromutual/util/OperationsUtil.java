@@ -64,7 +64,6 @@ public class OperationsUtil {
 				cookieAccounts = Account.fromBase64List(altoroCookie.getValue());
 			
 			
-			
 			try {
 				accountId = Long.parseLong(accountIdString);
 			} catch (NumberFormatException e) {
@@ -113,6 +112,28 @@ public class OperationsUtil {
 			message = amount + " was successfully transferred from Account " + debitActId + " into Account " + creditActId + " at " + new SimpleDateFormat().format(new Date()) + ".";
 		}
 		
+		return message;
+	}
+
+
+	public static String doServletTrade(HttpServletRequest request, String tradeAccountID, int tradeAmount, double tradePrice, String stockSymbol){
+		User user = ServletUtil.getUser(request);
+		String username = user.getUsername();
+		String message = null;
+
+		Long tradeAccount = Long.parseLong(tradeAccountID);
+
+		if (tradeAccount <= 0){
+			message = "Originating account is invalid";
+		} else if (tradeAmount == 0) {
+			message = "Trade amount is invalid";
+		}
+
+		if (message == null && tradeAmount != 0){
+			//Notice that available balance is not checked
+			message = DBUtil.tradeStock(username, tradeAccountID, tradeAmount, tradePrice, stockSymbol);
+		}
+
 		return message;
 	}
 

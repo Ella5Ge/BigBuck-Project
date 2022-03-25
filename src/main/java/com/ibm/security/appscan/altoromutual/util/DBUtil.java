@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
+import javax.xml.transform.Result;
 
 import com.ibm.security.appscan.Log4AltoroJ;
 import com.ibm.security.appscan.altoromutual.model.Account;
@@ -149,6 +150,7 @@ public class DBUtil {
 			statement.execute("DROP TABLE ACCOUNTS");
 			statement.execute("DROP TABLE TRANSACTIONS");
 			statement.execute("DROP TABLE FEEDBACK");
+			statement.execute("DROP TABLE TRADE");
 		} catch (SQLException e) {
 			// not a problem
 		}
@@ -165,6 +167,10 @@ public class DBUtil {
 		statement.execute("CREATE TABLE TRANSACTIONS (TRANSACTION_ID INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 2311, INCREMENT BY 1), " +
 				"ACCOUNTID BIGINT NOT NULL, DATE TIMESTAMP NOT NULL, TYPE VARCHAR(100) NOT NULL, " +
 				"AMOUNT DOUBLE NOT NULL, PRIMARY KEY (TRANSACTION_ID))");
+		statement.execute("CREATE TABLE TRADE (TRADE_ID INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 3970, INCREMENT BY 1), " +
+				"ACCOUNTID BIGINT NOT NULL, DATE TIMESTAMP NOT NULL, TYPE VARCHAR(100) NOT NULL, STOCKSYMBOL VARCHAR(50) NOT NULL, " +
+				"TRADEAMOUNT INTEGER NOT NULL, TRADEPRICE DOUBLE NOT NULL, PRIMARY KEY (TRADE_ID))");
+		statement.execute("CREATE TABLE HOLDINGS (ACCOUNTID BIGINT NOT NULL, STOCKSYMBOL VARCHAR(50) NOT NULL, HOLDINGAMOUNT INTEGER NOT NULL)");
 
 		statement.execute("INSERT INTO PEOPLE (USER_ID,PASSWORD,FIRST_NAME,LAST_NAME,ROLE) " +
 				"VALUES ('admin', 'admin', 'Admin', 'User','admin'), " +
@@ -404,6 +410,70 @@ public class DBUtil {
 		}
 	}
 
+	/**
+	 * Buy or sell stocks
+	 * @param username
+	 * @param tradeAccountID
+	 * @param tradeAmount  if positive --> the action is buy stock; if negative --> sell stock
+	 */
+	public static String tradeStock(String username, String tradeAccountID, int tradeAmount, double tradePrice, String stockSymbol) {
+		try {
+			User user = getUserInfo(username);
+
+			Connection connection = getConnection();
+			Statement statement = connection.createStatement();
+
+			Account tradeAccount = Account.getAccount(tradeAccountID);
+
+			java.sql.Timestamp date = new Timestamp(new java.util.Date().getTime());
+
+			double volume = tradeAmount * tradePrice;
+
+			double currentBalance = tradeAccount.getBalance();
+
+			// buy
+			if(tradeAmount > 0) {
+				if (currentBalance < volume) {
+					return "Balance are not sufficient. Failed to buy stock";
+				}
+				// update trade table
+				statement.execute("INSERT INTO TRADE (ACCOUNTID, DATE, TYPE, STOCKSYMBOL, TRADEAMOUNT, TRADEPRICE) VALUES ("+tradeAccountID+",'"+date+"','buy','"+stockSymbol+"','"+tradeAmount+"','"+tradePrice+"' ");
+
+				// update holding table
+				ResultSet resultSet_buy = statement.executeQuery("SELECT * FROM HOLDINGS WHERE ACCOUNTID = '"+ tradeAccountID +"' AND STOCKSYMBOL = '"+stockSymbol+"' ");
+				if(!resultSet_buy.next()) {
+					statement.execute("INSERT INTO HOLDINGS (ACCOUNTIS, STOCKSYMBOL, HOLDINGAMOUNT) VALUES ("+tradeAccountID+", '"+stockSymbol+"', '"+tradeAccount+"')");
+				}
+				int currentHoldingBuy = resultSet_buy.getInt("HOLDINGAMOUNT");
+				statement.execute("UPDATE HOLDINGS SET HOLDINGAMOUNT = '"+(currentHoldingBuy+tradeAmount)+"' WHERE ACCOUNTID = '"+ tradeAccountID +"' AND STOCKSYMBOL = '"+stockSymbol+"' ");
+			}
+
+			// sell
+			if (tradeAmount < 0) {
+				int abstradeAmount = -tradeAmount;
+				ResultSet resultSet_sell = statement.executeQuery("SELECT * FROM HOLDINGS WHERE ACCOUNTID = '"+ tradeAccountID +"' AND STOCKSYMBOL = '"+stockSymbol+"' "); /* BAD - user input should always be sanitized */
+				if (!resultSet_sell.next())
+					return "This stock doesn't exist in the holding list. Failed to sell stock";
+				int currentHoldingSell = resultSet_sell.getInt("HOLDINGAMOUNT");
+				if (currentHoldingSell < abstradeAmount) {
+					return  "The number of holding stock are not sufficient. Failed to sell stock";
+				}
+				// update trade table
+				statement.execute("INSERT INTO TRADE (ACCOUNTID, DATE, TYPE, STOCKSYMBOL, TRADEAMOUNT, TRADEPRICE) VALUES ("+tradeAccountID+",'"+date+"','sell','"+stockSymbol+"','"+abstradeAmount+"','"+tradePrice+"' ");
+
+				// update holding table
+				statement.execute("UPDATE HOLDINGS SET HOLDINGAMOUNT = '"+(currentHoldingSell+tradeAmount)+"' WHERE ACCOUNTID = '"+ tradeAccountID +"' AND STOCKSYMBOL = '"+stockSymbol+"' ");
+			}
+
+			// update balance
+			statement.execute("UPDATE ACCOUNTS SET BALANCE = '"+(currentBalance-volume)+"' WHERE ACCOUNT_ID = '"+tradeAccountID+"'");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return "Trading a stock failed. Please try again later.";
+		}
+		return null;
+	}
 
 	/**
 	 * Get transaction information for the specified accounts in the date range (non-inclusive of the dates)

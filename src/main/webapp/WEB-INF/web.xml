@@ -104,6 +104,16 @@
   </servlet>
   <servlet>
     <description>
+    </description>
+    <display-name>
+      TradeServlet
+    </display-name>
+    <servlet-name>TradeServlet</servlet-name>
+    <servlet-class>
+      com.ibm.security.appscan.altoromutual.servlet.TradeServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <description>
 		</description>
     <display-name>
 		CCApplyServlet</display-name>
@@ -171,6 +181,10 @@
   <servlet-mapping>
     <servlet-name>TransferServlet</servlet-name>
     <url-pattern>/bank/doTransfer</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>TradeServlet</servlet-name>
+    <url-pattern>/bank/doTrade</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>AccountViewServlet</servlet-name>
