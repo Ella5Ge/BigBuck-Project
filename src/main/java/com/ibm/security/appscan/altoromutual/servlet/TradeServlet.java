@@ -1,5 +1,6 @@
 package com.ibm.security.appscan.altoromutual.servlet;
 
+import com.ibm.security.appscan.altoromutual.util.DBUtil;
 import com.ibm.security.appscan.altoromutual.util.OperationsUtil;
 import com.ibm.security.appscan.altoromutual.util.ServletUtil;
 
@@ -16,6 +17,12 @@ import java.io.IOException;
 @WebServlet("/TradeServlet")
 
 public class TradeServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        doPost(req, resp);
+    }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
@@ -24,31 +31,22 @@ public class TradeServlet extends HttpServlet {
             return ;
         }
 
-        String message = null;
-        try {
-            String accountIdString = request.getParameter("chooseAccount");
-            String tradeTypeString = request.getParameter("tradeType");
-            String stockSymbol = request.getParameter("stockSymbol");
-            int tradeAmount = Integer.parseInt(request.getParameter("tradeAmount"));
-            double tradePrice = 10.25;
+        String accountIdString = request.getParameter("chooseAccount");
+        String tradeTypeString = request.getParameter("tradeType");
+        String stockSymbol = request.getParameter("stockSymbol");
+        int tradeAmount = Integer.parseInt(request.getParameter("tradeAmount"));
+        double tradePrice = 10.25;
 
-            if (tradeTypeString.equals("sell")) {
-                tradeAmount = -tradeAmount;
-            }
+        // calculate volume
 
-            // calculate volume
+        // calculate balance in cash account
 
-            // calculate balance in cash account
+        String message = DBUtil.tradeStock(accountIdString, tradeTypeString, tradeAmount, tradePrice, stockSymbol);
 
-            message = OperationsUtil.doServletTrade(request, accountIdString, tradeAmount, tradePrice, stockSymbol);
-
-            if(message != null) {
-                throw new Exception("Failed to trade!");
-            }
-        } catch (Exception e) {
-            request.setAttribute("loginError", e);
-            response.sendRedirect("stocks.jsp");
+        if (message == null) {
+            message = "Trade Successfully";
         }
+
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("stocks.jsp");
         request.setAttribute("message", message);

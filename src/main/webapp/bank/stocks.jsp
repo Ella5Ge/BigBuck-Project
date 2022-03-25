@@ -27,11 +27,11 @@ IBM AltoroJ
 	<jsp:include page="membertoc.jspf"/>
     <td valign="top" colspan="3" class="bb">
 		<%@page import="com.ibm.security.appscan.altoromutual.model.Account"%>
+		<%
+			com.ibm.security.appscan.altoromutual.model.User user = (com.ibm.security.appscan.altoromutual.model.User)request.getSession().getAttribute("user");
+		%>
 
 		<div class="fl" style="width: 99%;">
-			<%
-				com.ibm.security.appscan.altoromutual.model.User user = (com.ibm.security.appscan.altoromutual.model.User)request.getSession().getAttribute("user");
-			%>
 
 			<script type="text/javascript">
 
@@ -47,7 +47,11 @@ IBM AltoroJ
 
 			</script>
 
-			<h1> Trade Stock</h1>
+			<div class="fl" style="width: 99%;">
+
+				<form action="doTrade" method="post" name="trade" id="trade" onsubmit="return (confirminput(trade));">
+
+					<h1> Trade Stock</h1>
 <%--			<p><span id="_ctl0__ctl0_Content_Main_message" style="color:#FF0066;font-size:12pt;font-weight:bold;">--%>
 <%--				<%--%>
 <%--					java.lang.String error = (String)request.getSession(true).getAttribute("loginError");--%>
@@ -57,65 +61,54 @@ IBM AltoroJ
 <%--					}--%>
 <%--				%>--%>
 <%--			</span></p>--%>
-
-			<form action="TradeServlet" method="post" name="trade" id="trade" onsubmit="return (confirminput(trade));">
-				<table>
+					<table cellSpacing="0" cellPadding="1" width="100%" border="0">
+						<tr>
+							<td>
+								Choose Account:
+							</td>
+							<td>
+								<select size="1" id="chooseAccount" name="chooseAccount">
+									<%
+										for (Account account: user.getAccounts()){
+											out.println("<option value=\""+account.getAccountId()+"\" >" + account.getAccountId() + " " + account.getAccountName() + "</option>");
+										}
+									%>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td><strong>Trade Type:</strong></td>
+							<td>
+								<select size="1" id="tradeType" name="tradeType">
+									<option value="buy">Buy</option>
+									<option value="sell">Sell</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td><strong>Stock Symbol:</strong></td>
+							<td>
+								<input type="text" id="stockSymbol" name="stockSymbol" style="width: 150px;">
+							</td>
+						</tr>
 					<tr>
-						<td>
-							Account:
-						</td>
-						<td>
-							<select size="1" id="chooseAccount" name="chooseAccount">
-								<%
-									for (Account account: user.getAccounts()){
-										out.println("<option value=\""+account.getAccountId()+"\" >" + account.getAccountId() + " " + account.getAccountName() + "</option>");
-									}
-								%>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							Trade Type:
-						</td>
-						<td>
-							<select size="1" id="tradeType" name="tradeType">
-								<option value="buy">Buy</option>
-								<option value="sell">Sell</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							Stock Symbol:
-						</td>
-						<td>
-							<input type="text" id="stockSymbol" name="stockSymbol" style="width: 150px;">
-						</td>
-					</tr>
-					<tr>
-						<td>
-							Stock Amount:
-						</td>
+						<td><strong>Stock Amount:</strong></td>
 						<td>
 							<input type="number" id="tradeAmount" name="tradeAmount" style="width: 150px;">
 						</td>
 					</tr>
-					<tr>
-						<td></td>
-						<td>
-							<input type="submit" name="tradestock" value="Trade" id="tradestock">
-						</td>
-					</tr>
-					<tr>
-						<td colspan="2">&nbsp;</td>
-					</tr>
-					<tr>
-						<td colspan="2" align="center">
-							<span id="_ctl0__ctl0_Content_Main_postResp" align="center"><span style='color: Red'><%=(request.getAttribute("message")==null)?"":request.getAttribute("message") %></span></span>
-							<span id="soapResp" name="soapResp" align="center" />
-						</td>
-					</tr>
+						<tr>
+							<td colspan="2" align="center"><input type="submit" name="trade" value="Trade Stock" ID="trade"></td>
+						</tr>
+						<tr>
+							<td colspan="2">&nbsp;</td>
+						</tr>
+						<tr>
+							<td colspan="2" align="center">
+								<span id="_ctl0__ctl0_Content_Main_postResp" align="center"><span style='color: Red'><%=(request.getAttribute("message")==null)?"":request.getAttribute("message") %></span></span>
+								<span id="soapResp" name="soapResp" align="center" />
+							</td>
+						</tr>
 				</table>
 			</form>
 		</div>

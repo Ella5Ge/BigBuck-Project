@@ -215,6 +215,12 @@ public class DBUtil {
 				"(800004,'2018-06-11 11:01:30.10','Withdrawal', -10.00), " +
 				"(800005,'2018-06-11 11:01:30.10','Deposit', 10.00)");
 
+		statement.execute("INSERT INTO TRADE (ACCOUNTID, DATE, TYPE, STOCKSYMBOL, TRADEAMOUNT, TRADEPRICE) VALUES " +
+				"(800002, '2018-05-15 09:00:00.22','buy','AAPL',200,20.75)");
+
+		statement.execute("INSERT INTO HOLDINGS (ACCOUNTID, STOCKSYMBOL, HOLDINGAMOUNT) VALUES" +
+				"(800002, 'AAPL', 200)");
+
 		Log4AltoroJ.getInstance().logInfo("Database initialized");
 	}
 
@@ -410,20 +416,27 @@ public class DBUtil {
 		}
 	}
 
+
 	/**
 	 * Buy or sell stocks
-	 * @param username
 	 * @param tradeAccountID
-	 * @param tradeAmount  if positive --> the action is buy stock; if negative --> sell stock
+	 * @param tradeAmount --> must be positive
 	 */
-	public static String tradeStock(String username, String tradeAccountID, int tradeAmount, double tradePrice, String stockSymbol) {
+	public static String tradeStock(String tradeAccountID, String tradeType, int tradeAmount, double tradePrice, String stockSymbol) {
+		String message = null;
 		try {
-			User user = getUserInfo(username);
 
 			Connection connection = getConnection();
 			Statement statement = connection.createStatement();
 
+			Long accountIDNumber = Long.parseLong(tradeAccountID);
 			Account tradeAccount = Account.getAccount(tradeAccountID);
+
+			if (accountIDNumber <= 0){
+				message = "Originating account is invalid";
+			} else if (tradeAmount <= 0) {
+				message = "Trade amount is invalid";
+			}
 
 			java.sql.Timestamp date = new Timestamp(new java.util.Date().getTime());
 
@@ -431,43 +444,54 @@ public class DBUtil {
 
 			double currentBalance = tradeAccount.getBalance();
 
+			if (message != null) {
+				return message;
+			}
+
 			// buy
-			if(tradeAmount > 0) {
+			if(tradeType == "buy") {
 				if (currentBalance < volume) {
 					return "Balance are not sufficient. Failed to buy stock";
 				}
+				double remainBalance = currentBalance - volume;
+				// update balance
+				statement.execute("UPDATE ACCOUNTS SET BALANCE = '"+remainBalance+"' WHERE ACCOUNT_ID = '"+accountIDNumber+"'");
+
 				// update trade table
-				statement.execute("INSERT INTO TRADE (ACCOUNTID, DATE, TYPE, STOCKSYMBOL, TRADEAMOUNT, TRADEPRICE) VALUES ("+tradeAccountID+",'"+date+"','buy','"+stockSymbol+"','"+tradeAmount+"','"+tradePrice+"' ");
+				statement.execute("INSERT INTO TRADE (ACCOUNTID, DATE, TYPE, STOCKSYMBOL, TRADEAMOUNT, TRADEPRICE) VALUES ("+accountIDNumber+",'"+date+"','"+tradeType+"','"+stockSymbol+"','"+tradeAmount+"','"+tradePrice+"' ");
 
 				// update holding table
-				ResultSet resultSet_buy = statement.executeQuery("SELECT * FROM HOLDINGS WHERE ACCOUNTID = '"+ tradeAccountID +"' AND STOCKSYMBOL = '"+stockSymbol+"' ");
-				if(!resultSet_buy.next()) {
-					statement.execute("INSERT INTO HOLDINGS (ACCOUNTIS, STOCKSYMBOL, HOLDINGAMOUNT) VALUES ("+tradeAccountID+", '"+stockSymbol+"', '"+tradeAccount+"')");
-				}
-				int currentHoldingBuy = resultSet_buy.getInt("HOLDINGAMOUNT");
-				statement.execute("UPDATE HOLDINGS SET HOLDINGAMOUNT = '"+(currentHoldingBuy+tradeAmount)+"' WHERE ACCOUNTID = '"+ tradeAccountID +"' AND STOCKSYMBOL = '"+stockSymbol+"' ");
-			}
+				ResultSet resultSet_buy = statement.executeQuery("SELECT * FROM HOLDINGS WHERE ACCOUNTID = '"+ accountIDNumber +"' AND STOCKSYMBOL = '"+stockSymbol+"' ");
 
-			// sell
-			if (tradeAmount < 0) {
-				int abstradeAmount = -tradeAmount;
-				ResultSet resultSet_sell = statement.executeQuery("SELECT * FROM HOLDINGS WHERE ACCOUNTID = '"+ tradeAccountID +"' AND STOCKSYMBOL = '"+stockSymbol+"' "); /* BAD - user input should always be sanitized */
+				if(!resultSet_buy.next()) {
+					statement.execute("INSERT INTO HOLDINGS (ACCOUNTID, STOCKSYMBOL, HOLDINGAMOUNT) VALUES ("+accountIDNumber+", '"+stockSymbol+"', '"+tradeAmount+"')");
+				} else {
+					int currentHoldingBuy = resultSet_buy.getInt("HOLDINGAMOUNT");
+					if (currentHoldingBuy > 0) {
+						statement.execute("UPDATE HOLDINGS SET HOLDINGAMOUNT = '" + (currentHoldingBuy + tradeAmount) + "' WHERE ACCOUNTID = '" + accountIDNumber + "' AND STOCKSYMBOL = '" + stockSymbol + "' ");
+					}
+				}
+			}
+			else if (tradeType == "sell") {
+				ResultSet resultSet_sell = statement.executeQuery("SELECT * FROM HOLDINGS WHERE ACCOUNTID = '"+ accountIDNumber +"' AND STOCKSYMBOL = '"+stockSymbol+"' "); /* BAD - user input should always be sanitized */
 				if (!resultSet_sell.next())
 					return "This stock doesn't exist in the holding list. Failed to sell stock";
-				int currentHoldingSell = resultSet_sell.getInt("HOLDINGAMOUNT");
-				if (currentHoldingSell < abstradeAmount) {
-					return  "The number of holding stock are not sufficient. Failed to sell stock";
+				else {
+					int currentHoldingSell = resultSet_sell.getInt("HOLDINGAMOUNT");
+					if (currentHoldingSell < tradeAmount) {
+						return  "The number of holding stock are not sufficient. Failed to sell stock";
+					} else {
+						// update balance
+						statement.execute("UPDATE ACCOUNTS SET BALANCE = '"+(currentBalance+volume)+"' WHERE ACCOUNT_ID = '"+accountIDNumber+"'");
+
+						// update trade table
+						statement.execute("INSERT INTO TRADE (ACCOUNTID, DATE, TYPE, STOCKSYMBOL, TRADEAMOUNT, TRADEPRICE) VALUES ("+accountIDNumber+",'"+date+"', '"+tradeType+"','"+stockSymbol+"','"+tradeAmount+"','"+tradePrice+"' ");
+
+						// update holding table
+						statement.execute("UPDATE HOLDINGS SET HOLDINGAMOUNT = '"+(currentHoldingSell-tradeAmount)+"' WHERE ACCOUNTID = '"+ accountIDNumber +"' AND STOCKSYMBOL = '"+stockSymbol+"' ");
+					}
 				}
-				// update trade table
-				statement.execute("INSERT INTO TRADE (ACCOUNTID, DATE, TYPE, STOCKSYMBOL, TRADEAMOUNT, TRADEPRICE) VALUES ("+tradeAccountID+",'"+date+"','sell','"+stockSymbol+"','"+abstradeAmount+"','"+tradePrice+"' ");
-
-				// update holding table
-				statement.execute("UPDATE HOLDINGS SET HOLDINGAMOUNT = '"+(currentHoldingSell+tradeAmount)+"' WHERE ACCOUNTID = '"+ tradeAccountID +"' AND STOCKSYMBOL = '"+stockSymbol+"' ");
 			}
-
-			// update balance
-			statement.execute("UPDATE ACCOUNTS SET BALANCE = '"+(currentBalance-volume)+"' WHERE ACCOUNT_ID = '"+tradeAccountID+"'");
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return "Trading a stock failed. Please try again later.";
