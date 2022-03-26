@@ -33,7 +33,7 @@ public class TradeServlet extends HttpServlet {
 
         String accountIdString = request.getParameter("chooseAccount");
         String tradeTypeString = request.getParameter("tradeType");
-        String stockSymbol = request.getParameter("stockSymbol");
+        String stockSymbol = request.getParameter("stockSymbol");  // 还没检验stock symbol是否存在
         int tradeAmount = Integer.parseInt(request.getParameter("tradeAmount"));
         double tradePrice = 10.25;
 
@@ -46,7 +46,6 @@ public class TradeServlet extends HttpServlet {
         if (message == null) {
             message = "Trade Successfully";
         }
-
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("stocks.jsp");
         request.setAttribute("message", message);
