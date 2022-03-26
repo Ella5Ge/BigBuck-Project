@@ -1,4 +1,4 @@
-<%@page import="com.ibm.security.appscan.altoromutual.model.Transaction"%>
+<%@page import="com.ibm.security.appscan.altoromutual.model.Trade"%>
 <%@page import="com.ibm.security.appscan.altoromutual.util.DBUtil"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
@@ -99,16 +99,61 @@ IBM AltoroJ
 		  </tr>
 		  <tr>
 		    <td>
-		      <br><b>10 Most Recent Transactions</b><table border=1 cellpadding=2 cellspacing=0 width='590'><tr><th bgcolor=#cccccc width=100>Date </th><th width=290>Description</th><th width=100>Amount</th></tr></table><DIV ID='recent' STYLE='overflow: hidden; overflow-y: scroll; width:590px; height: 152px; padding:0px; margin: 0px' ><table border=1 cellpadding=2 cellspacing=0 width='574'>
-		      <%
-		      Transaction[] transactions = DBUtil.getTransactions(null, null, new Account[]{DBUtil.getAccount(Long.valueOf(paramName))}, 10);
-				for (Transaction transaction: transactions){		      
-			   		double dblAmt = transaction.getAmount();
-					String dollarFormat = (dblAmt<1)?"$0.00":"$.00";
-					String amount = new DecimalFormat(dollarFormat).format(dblAmt);
-					String date = new SimpleDateFormat("yyyy-MM-dd").format(transaction.getDate());
-		      %>
-		      <tr><td width=99><%=date%></td><td width=292><%=transaction.getTransactionType()%></td><td width=84 align=right><%=amount%></td></tr>
+				<br>
+				<b>
+					10 Most Recent Trade Records
+				</b>
+				<table border=1 cellpadding=2 cellspacing=0 width='500'>
+					<tr>
+						<th bgcolor=#cccccc width=100>
+							Date
+						</th>
+						<th width=100>
+							Description
+						</th>
+						<th width=100>
+							Shares Hold
+						</th>
+						<th width=100>
+							Price per share
+						</th>
+					</tr>
+				</table><DIV ID='recent' STYLE='overflow: hidden; overflow-y: scroll; width:590px; height: 152px; padding:0px; margin: 0px' >
+				<table border=1 cellpadding=2 cellspacing=0 width='500'>
+				<%
+					Trade[] trades = DBUtil.getTradeRecords(null, null, new Account[]{DBUtil.getAccount(Long.valueOf(paramName))}, 10);
+					for (Trade trade: trades){
+						double dblAmt = trade.getAmount();
+						double dblPrice = trade.getPrice();
+						String dollarFormat = (dblAmt<1)?"$0.00":"$.00";
+						String amount = new DecimalFormat(dollarFormat).format(dblAmt);
+						String price = new DecimalFormat(dollarFormat).format(dblPrice);
+						String date = new SimpleDateFormat("yyyy-MM-dd").format(trade.getDate());
+				%>
+				<tr>
+					<td width=100>
+						<%=date%>
+					</td>
+					<td width=100>
+						<%=trade.getTradeType()%>
+					</td>
+					<td width=100 align=right>
+						<%=amount%>
+					</td>
+					<td width=100 align=right>
+						<%=price%>
+					</td>
+				</tr>
+<%--			<br><b>10 Most Recent Transactions</b><table border=1 cellpadding=2 cellspacing=0 width='590'><tr><th bgcolor=#cccccc width=100>Date </th><th width=290>Description</th><th width=100>Amount</th></tr></table><DIV ID='recent' STYLE='overflow: hidden; overflow-y: scroll; width:590px; height: 152px; padding:0px; margin: 0px' ><table border=1 cellpadding=2 cellspacing=0 width='574'>--%>
+<%--		      <%--%>
+<%--		      Transaction[] transactions = DBUtil.getTransactions(null, null, new Account[]{DBUtil.getAccount(Long.valueOf(paramName))}, 10);--%>
+<%--				for (Transaction transaction: transactions){		      --%>
+<%--			   		double dblAmt = transaction.getAmount();--%>
+<%--					String dollarFormat = (dblAmt<1)?"$0.00":"$.00";--%>
+<%--					String amount = new DecimalFormat(dollarFormat).format(dblAmt);--%>
+<%--					String date = new SimpleDateFormat("yyyy-MM-dd").format(transaction.getDate());--%>
+<%--		      %>--%>
+<%--		      <tr><td width=99><%=date%></td><td width=292><%=transaction.getTransactionType()%></td><td width=84 align=right><%=amount%></td></tr>--%>
 		      <% } %>
 		      </table></DIV>
 		    </td>

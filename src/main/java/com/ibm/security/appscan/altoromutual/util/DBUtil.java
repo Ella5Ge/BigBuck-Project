@@ -33,10 +33,7 @@ import javax.sql.DataSource;
 import javax.xml.transform.Result;
 
 import com.ibm.security.appscan.Log4AltoroJ;
-import com.ibm.security.appscan.altoromutual.model.Account;
-import com.ibm.security.appscan.altoromutual.model.Feedback;
-import com.ibm.security.appscan.altoromutual.model.Transaction;
-import com.ibm.security.appscan.altoromutual.model.User;
+import com.ibm.security.appscan.altoromutual.model.*;
 import com.ibm.security.appscan.altoromutual.model.User.Role;
 
 /**
@@ -218,8 +215,8 @@ public class DBUtil {
 				"(800004,'2018-06-11 11:01:30.10','Withdrawal', -10.00), " +
 				"(800005,'2018-06-11 11:01:30.10','Deposit', 10.00)");
 
-		statement.execute("INSERT INTO TRADE (ACCOUNTID, DATE, TYPE, STOCKSYMBOL, TRADEAMOUNT, TRADEPRICE) VALUES " +
-				"(800002, '2018-05-15 09:00:00.22','buy','AAPL',200,20.75)");
+//		statement.execute("INSERT INTO TRADE (ACCOUNTID, DATE, TYPE, STOCKSYMBOL, TRADEAMOUNT, TRADEPRICE) VALUES " +
+//				"(800002, '2018-05-15 09:00:00.22','buy','AAPL',200,20.75)");
 
 //		statement.execute("INSERT INTO HOLDINGS (ACCOUNTID, STOCKSYMBOL, HOLDINGAMOUNT) VALUES" +
 //				"(800002, 'AAPL', 200)");
@@ -421,8 +418,7 @@ public class DBUtil {
 
 
 	/**
-	 * Add trade records
-	 * @param
+	 * Add trade records --> Successful
 	 */
 	public static void addTradeRecord(long accountIDNumber, Timestamp date, String tradeType, String stockSymbol, int tradeAmount, double tradePrice) throws SQLException {
 		Connection connection = getConnection();
@@ -430,7 +426,6 @@ public class DBUtil {
 
 		statement.execute("INSERT INTO TRADE (ACCOUNTID, DATE, TYPE, STOCKSYMBOL, TRADEAMOUNT, TRADEPRICE) VALUES ("+accountIDNumber+",'"+date+"','"+tradeType+"','"+stockSymbol+"',"+tradeAmount+","+tradePrice+")");
 	}
-
 
 	/**
 	 * Update Balance --> Successful
@@ -442,9 +437,8 @@ public class DBUtil {
 		statement.executeUpdate("UPDATE ACCOUNTS SET BALANCE = "+ newBalance +" WHERE ACCOUNT_ID = "+ accountIDNumber);
 	}
 
-
 	/**
-	 * Get holding share of stock
+	 * Get holding share of stock --> Successful
 	 */
 	public static int getStockShare(long accountIDNumber, String stockSymbol) throws SQLException {
 		Connection connection = getConnection();
@@ -459,7 +453,6 @@ public class DBUtil {
 		return amount;
 	}
 
-
 	/**
 	 * Update Holding  -->  2 situation
 	 * First --> Insert
@@ -470,7 +463,6 @@ public class DBUtil {
 
 		statement.execute("INSERT INTO HOLDINGS (ACCOUNTID, STOCKSYMBOL, HOLDINGAMOUNT) VALUES ("+accountIDNumber+",'"+stockSymbol+"',"+holdingAmount+")");
 	}
-
 
 	/**
 	 * Update Holding Amount
@@ -487,7 +479,12 @@ public class DBUtil {
 	/**
 	 * Buy or sell stocks
 	 * @param tradeAccountID
+	 * @param tradeType --> buy or sell
 	 * @param tradeAmount --> must be positive
+	 * @param tradePrice --> live market price
+	 * @param stockSymbol
+	 * Still need to refactor --> partially finish
+	 * Still need to test --> partially finish --> do not include all test cases
 	 */
 	public static String tradeStock(String tradeAccountID, String tradeType, int tradeAmount, double tradePrice, String stockSymbol) {
 		String message = null;
@@ -559,6 +556,64 @@ public class DBUtil {
 		}
 		return null;
 	}
+
+
+	/**
+	 * Get all trade information for the specified accounts
+	 * @param accounts
+	 * @param startDate
+	 * @param endDate
+	 * @param rowCount
+	 */
+	public static Trade[] getTradeRecords(String startDate, String endDate, Account[] accounts, int rowCount) throws SQLException {
+		if (accounts == null || accounts.length == 0) {
+			return null;
+		}
+
+		Connection connection = getConnection();
+		Statement statement = connection.createStatement();
+
+		if (rowCount > 0)
+			statement.setMaxRows(rowCount);
+
+		StringBuffer acctIds = new StringBuffer();
+		acctIds.append("ACCOUNTID = " + accounts[0].getAccountId());
+		for (int i=1; i<accounts.length; i++){
+			acctIds.append(" OR ACCOUNTID = "+accounts[i].getAccountId());
+		}
+
+		String dateString = null;
+
+		if (startDate != null && startDate.length()>0 && endDate != null && endDate.length()>0){
+			dateString = "DATE BETWEEN '" + startDate + " 00:00:00' AND '" + endDate + " 23:59:59'";
+		} else if (startDate != null && startDate.length()>0){
+			dateString = "DATE > '" + startDate +" 00:00:00'";
+		} else if (endDate != null && endDate.length()>0){
+			dateString = "DATE < '" + endDate + " 23:59:59'";
+		}
+
+		String query = "SELECT * FROM TRADE WHERE (" + acctIds.toString() + ") " + ((dateString==null)?"": "AND (" + dateString + ") ") + "ORDER BY DATE DESC" ;
+		ResultSet resultSet = null;
+		try {
+			resultSet = statement.executeQuery(query);
+		} catch (SQLException e){
+			throw e;
+		}
+		ArrayList<Trade> trades = new ArrayList<>();
+		while (resultSet.next()){
+			int tradeId = resultSet.getInt("TRADE_ID");
+			long actId = resultSet.getLong("ACCOUNTID");
+			Timestamp date = resultSet.getTimestamp("DATE");
+			String type = resultSet.getString("TYPE");
+			String stockSymbol = resultSet.getString("STOCKSYMBOL");
+			int amount = resultSet.getInt("TRADEAMOUNT");
+			double price = resultSet.getDouble("TRADEPRICE");
+			trades.add(new Trade(tradeId, actId, date, type, amount, price, stockSymbol));
+		}
+
+		return trades.toArray(new Trade[trades.size()]);
+	}
+
 
 	/**
 	 * Get transaction information for the specified accounts in the date range (non-inclusive of the dates)
