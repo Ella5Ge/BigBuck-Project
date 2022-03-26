@@ -64,7 +64,6 @@ public class OperationsUtil {
 				cookieAccounts = Account.fromBase64List(altoroCookie.getValue());
 			
 			
-			
 			try {
 				accountId = Long.parseLong(accountIdString);
 			} catch (NumberFormatException e) {
@@ -115,6 +114,7 @@ public class OperationsUtil {
 		
 		return message;
 	}
+
 
 	public static String sendFeedback(String name, String email,
 			String subject, String comments) {

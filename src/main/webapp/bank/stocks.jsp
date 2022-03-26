@@ -26,33 +26,93 @@ IBM AltoroJ
 <div id="wrapper" style="width: 99%;">
 	<jsp:include page="membertoc.jspf"/>
     <td valign="top" colspan="3" class="bb">
+		<%@page import="com.ibm.security.appscan.altoromutual.model.Account"%>
+		<%
+			com.ibm.security.appscan.altoromutual.model.User user = (com.ibm.security.appscan.altoromutual.model.User)request.getSession().getAttribute("user");
+		%>
+
 		<div class="fl" style="width: 99%;">
-			<div style="display:inline;">
-				<script type="text/javascript" src="../util/swfobject.js"></script>
-				<script type="text/javascript">
-						swfobject.registerObject("myId", "9.0.0", "../util/expressInstall.swf");
-				</script>
-			
-				<object id="myId" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="550" height="750">
-					<param name="movie" value="../util/EasyStock.swf" />
-			   		<!--[if !IE]>-->
-					<object type="application/x-shockwave-flash" data="../util/EasyStock.swf" width="550" height="750">
-					<!--<![endif]-->
-			</div>
+
+			<script type="text/javascript">
+
+				function confirminput(myform) {
+					var amt=document.getElementById("tradeAmount").value;
+
+					if (!(amt > 0)){
+						alert("Stock Amount must be a number greater than 0.");
+						return false;
+					}
+					return true;
+				}
+
+			</script>
+
+			<div class="fl" style="width: 99%;">
+
+				<form action="doTrade" method="post" name="trade" id="trade" onsubmit="return (confirminput(trade));">
+
+					<h1> Trade Stock</h1>
+<%--			<p><span id="_ctl0__ctl0_Content_Main_message" style="color:#FF0066;font-size:12pt;font-weight:bold;">--%>
+<%--				<%--%>
+<%--					java.lang.String error = (String)request.getSession(true).getAttribute("loginError");--%>
+<%--					if (error != null && error.trim().length() > 0){--%>
+<%--						request.getSession().removeAttribute("loginError");--%>
+<%--						out.print(error);--%>
+<%--					}--%>
+<%--				%>--%>
+<%--			</span></p>--%>
+					<table cellSpacing="0" cellPadding="1" width="100%" border="0">
+						<tr>
+							<td>
+								Choose Account:
+							</td>
+							<td>
+								<select size="1" id="chooseAccount" name="chooseAccount">
+									<%
+										for (Account account: user.getAccounts()){
+											out.println("<option value=\""+account.getAccountId()+"\" >" + account.getAccountId() + " " + account.getAccountName() + "</option>");
+										}
+									%>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td><strong>Trade Type:</strong></td>
+							<td>
+								<select size="1" id="tradeType" name="tradeType">
+									<option value="buy">Buy</option>
+									<option value="sell">Sell</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td><strong>Stock Symbol:</strong></td>
+							<td>
+								<input type="text" id="stockSymbol" name="stockSymbol" style="width: 150px;">
+							</td>
+						</tr>
+					<tr>
+						<td><strong>Stock Amount:</strong></td>
+						<td>
+							<input type="number" id="tradeAmount" name="tradeAmount" style="width: 150px;">
+						</td>
+					</tr>
+						<tr>
+							<td colspan="2" align="center"><input type="submit" name="trade" value="Trade Stock" ID="trade"></td>
+						</tr>
+						<tr>
+							<td colspan="2">&nbsp;</td>
+						</tr>
+						<tr>
+							<td colspan="2" align="center">
+								<span id="_ctl0__ctl0_Content_Main_postResp" align="center"><span style='color: Red'><%=(request.getAttribute("message")==null)?"":request.getAttribute("message") %></span></span>
+								<span id="soapResp" name="soapResp" align="center" />
+							</td>
+						</tr>
+				</table>
+			</form>
 		</div>
     </td>	
 </div>
-<jsp:include page="/footer.jspf"/>   
 
-<div style="display:none;">
-	<script type="text/javascript" src="util/swfobject.js"></script>
-	<script type="text/javascript">
-			swfobject.registerObject("myId", "9.0.0", "util/expressInstall.swf");
-	</script>
-
-	<object id="myId" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="400" height="300">
-		<param name="movie" value="util/vulnerable.swf" />
-   		<!--[if !IE]>-->
-		<object type="application/x-shockwave-flash" data="util/vulnerable.swf" width="400" height="300">
-		<!--<![endif]-->
-</div>
+<jsp:include page="/footer.jspf"/>

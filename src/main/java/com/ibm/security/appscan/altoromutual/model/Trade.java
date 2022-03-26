@@ -6,17 +6,21 @@ public class Trade {
     private int tradeId;
     private long accountId;
     private String tradeType;
-    private double amount;
+    private int amount;
+    private double price;
     private Date date;
     private String stockSymbol;
+    private double volume;
 
-    public Trade(int transactionId, long accountId, Date date, String transactionType, double amount, String stockSymbol) {
+    public Trade(int tradeId, long accountId, Date date, String tradeType, int amount, double price, String stockSymbol) {
         this.accountId = accountId;
         this.amount = amount;
-        this.tradeId = transactionId;
-        this.tradeType = transactionType;
+        this.price = price;
+        this.tradeId = tradeId;
+        this.tradeType = tradeType;
         this.date = date;
         this.stockSymbol = stockSymbol;
+        this.volume = price * amount;
     }
 
     public int getTradeId() {return tradeId;}
@@ -29,13 +33,20 @@ public class Trade {
         return tradeType;
     }
 
-    public double getAmount() {
+    public int getAmount() {
         return amount;
+    }
+
+    public double getPrice() {
+        return price;
     }
 
     public Date getDate() {
         return date;
     }
 
-    public String getstockSymbol(){return stockSymbol; }
+    public String getStockSymbol() {return stockSymbol; }
+
+    public double getVolume() { return volume; }
+
 }
