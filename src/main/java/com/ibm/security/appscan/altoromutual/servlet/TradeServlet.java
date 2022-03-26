@@ -1,8 +1,10 @@
 package com.ibm.security.appscan.altoromutual.servlet;
 
+import com.ibm.security.appscan.altoromutual.util.ConnectYahooFinance;
 import com.ibm.security.appscan.altoromutual.util.DBUtil;
 import com.ibm.security.appscan.altoromutual.util.OperationsUtil;
 import com.ibm.security.appscan.altoromutual.util.ServletUtil;
+import org.json.JSONObject;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.RequestDispatcher;
@@ -35,13 +37,11 @@ public class TradeServlet extends HttpServlet {
         String tradeTypeString = request.getParameter("tradeType");
         String stockSymbol = request.getParameter("stockSymbol");  // 还没检验stock symbol是否存在
         int tradeAmount = Integer.parseInt(request.getParameter("tradeAmount"));
-        double tradePrice = 10.25;
+        JSONObject allInfo = ConnectYahooFinance.getLiveObjects(stockSymbol);
+        String stockName = allInfo.getString("displayName");
+        double tradePrice = allInfo.getDouble("regularMarketPrice");
 
-        // calculate volume
-
-        // calculate balance in cash account
-
-        String message = DBUtil.tradeStock(accountIdString, tradeTypeString, tradeAmount, tradePrice, stockSymbol);
+        String message = DBUtil.tradeStock(accountIdString, tradeTypeString, tradeAmount, tradePrice, stockSymbol, stockName);
 
         if (message == null) {
             message = "Trade Successfully";

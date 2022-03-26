@@ -10,9 +10,10 @@ public class Trade {
     private double price;
     private Date date;
     private String stockSymbol;
+    private String stockName;
     private double volume;
 
-    public Trade(int tradeId, long accountId, Date date, String tradeType, int amount, double price, String stockSymbol) {
+    public Trade(int tradeId, long accountId, Date date, String tradeType, int amount, double price, String stockSymbol, String stockName) {
         this.accountId = accountId;
         this.amount = amount;
         this.price = price;
@@ -20,6 +21,7 @@ public class Trade {
         this.tradeType = tradeType;
         this.date = date;
         this.stockSymbol = stockSymbol;
+        this.stockName = stockName;
         this.volume = price * amount;
     }
 
@@ -46,6 +48,10 @@ public class Trade {
     }
 
     public String getStockSymbol() {return stockSymbol; }
+
+    public String getStockName() {
+        return stockName;
+    }
 
     public double getVolume() { return volume; }
 

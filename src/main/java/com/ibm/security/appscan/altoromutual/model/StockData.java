@@ -11,20 +11,20 @@ public class StockData {
     private double volume =0.0;
 
     public StockData(){
-        String symbol = null;
-        String date = null;
-        double open = 0.0;
-        double close = 0.0;
-        double high = 0.0;
-        double low = 0.0;
-        double adj_close = 0.0;
-        double volume = 0.0;
+        this.symbol = null;
+        this.date = null;
+        this.open = 0.0;
+        this.close = 0.0;
+        this.high = 0.0;
+        this.low = 0.0;
+        this.adj_close = 0.0;
+        this.volume = 0.0;
     }
 
     public StockData(String symbol, String date, double open, double close, double high, double low, double adj_close, double volume){
         this.symbol = symbol;
         this.date = date;
-        this. open = open;
+        this.open = open;
         this.close = close;
         this.high = high;
         this.low = low;
