@@ -119,31 +119,31 @@ IBM AltoroJ
 					<% } %>
 					</table></DIV>
 			</td></tr>
-<%--			<tr><td>--%>
-<%--				<br><b>Holding List</b>--%>
-<%--				<table border=1 cellpadding=2 cellspacing=0 width='540'>--%>
-<%--					<tr><th width=90>Ticker Symbol</th>--%>
-<%--						<th width=90>Stock Name</th>--%>
-<%--						<th width=100>Shares Holding</th>--%>
-<%--						<th width=100>Price per share</th>--%>
-<%--					</tr>--%>
-<%--				</table>--%>
-<%--				<DIV ID='hold' STYLE='overflow: hidden; overflow-y: scroll; width:590px; height: 152px; padding:0px; margin: 0px' ><table border=1 cellpadding=2 cellspacing=0 width='540'>--%>
-<%--					<%--%>
-<%--						Holding[] holdings = DBUtil.getHolding(new Account[]{DBUtil.getAccount(Long.valueOf(paramName))});--%>
-<%--						for (Holding holding: holdings){--%>
-<%--							double dblcostPrice = holding.getCostPrice();--%>
-<%--							String dollarFormat2 = (dblcostPrice<1)?"$0.00":"$.00";--%>
-<%--							String costPrice = new DecimalFormat(dollarFormat2).format(dblcostPrice);--%>
-<%--					%>--%>
-<%--					<tr><td width=90><%=holding.getStockSymbol()%></td>--%>
-<%--						<td width=90><%=holding.getStockName()%></td>--%>
-<%--						<td width=100 align=right><%=holding.getHoldingAmount()%></td>--%>
-<%--						<td width=100 align=right><%=costPrice%></td>--%>
-<%--					</tr>--%>
-<%--					<% } %>--%>
-<%--				</table></DIV>--%>
-<%--			</td></tr>--%>
+			<tr><td>
+				<br><b>Holding List</b>
+				<table border=1 cellpadding=2 cellspacing=0 width='540'>
+					<tr><th width=90>Ticker Symbol</th>
+						<th width=90>Stock Name</th>
+						<th width=100>Shares Holding</th>
+						<th width=100>Price per share</th>
+					</tr>
+				</table>
+				<DIV ID='hold' STYLE='overflow: hidden; overflow-y: scroll; width:590px; height: 152px; padding:0px; margin: 0px' ><table border=1 cellpadding=2 cellspacing=0 width='540'>
+					<%
+						Holding[] holdings = DBUtil.getHolding(new Account[]{DBUtil.getAccount(Long.valueOf(paramName))});
+						for (Holding holding: holdings){
+							double dblcostPrice = holding.getCostPrice();
+							String dollarFormat2 = (dblcostPrice<1)?"$0.00":"$.00";
+							String costPrice = new DecimalFormat(dollarFormat2).format(dblcostPrice);
+					%>
+					<tr><td width=90><%=holding.getStockSymbol()%></td>
+						<td width=90><%=holding.getStockName()%></td>
+						<td width=100 align=right><%=holding.getHoldingAmount()%></td>
+						<td width=100 align=right><%=costPrice%></td>
+					</tr>
+					<% } %>
+				</table></DIV>
+			</td></tr>
 		</table>
 		
 		</div>

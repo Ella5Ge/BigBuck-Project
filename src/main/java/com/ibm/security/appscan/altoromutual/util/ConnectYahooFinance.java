@@ -1,5 +1,7 @@
 package com.ibm.security.appscan.altoromutual.util;
 
+import com.ibm.security.appscan.altoromutual.model.Account;
+import com.ibm.security.appscan.altoromutual.model.Holding;
 import com.ibm.security.appscan.altoromutual.model.StockData;
 import org.json.*;
 
@@ -123,10 +125,16 @@ public class ConnectYahooFinance{
 
 
     public static void main(String[] args) throws Exception {
-        JSONObject msg = getLiveObjects("AAPL");
-        System.out.println(msg.getDouble("regularMarketPrice"));
+//        JSONObject msg = getLiveObjects("AAPL");
+//        System.out.println(msg.getDouble("regularMarketPrice"));
 
-        ArrayList<StockData> list = getHistoryData("AAPL");
+        Account[] accounts = new Account[]{DBUtil.getAccount(800002)};
+        Holding[] holdings = DBUtil.getHolding(accounts);
+        ArrayList<StockData> list = null;
+        for(Holding holding: holdings) {
+            list = getHistoryData(holding.getStockSymbol());
+        }
+        System.out.println(list.get(0).getSymbol());
     }
 }
 

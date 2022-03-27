@@ -668,7 +668,7 @@ public class DBUtil {
 			acctIds.append(" OR ACCOUNTID = "+accounts[i].getAccountId());
 		}
 
-		String query = "SELECT * FROM HOLDING WHERE (" + acctIds.toString() + ")";
+		String query = "SELECT * FROM HOLDINGS WHERE (" + acctIds.toString() + ")";
 		ResultSet resultSet = null;
 		try {
 			resultSet = statement.executeQuery(query);
