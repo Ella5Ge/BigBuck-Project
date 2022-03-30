@@ -27,11 +27,11 @@ public class ConnectYahooFinance{
 
     /**
      * Get previous 5-year data
-     * @param symbol
+     * @param
      * @return
      */
-    public static ArrayList<StockData> getHistoryData(String symbol){
-        ArrayList<StockData> history_data = new ArrayList<StockData>();
+
+    public static long GenerateEndTimestamp(){
         //get timestamp
         Date current_date = new Date();
         //long end_date_timestamp = System.currentTimeMillis()/1000;
@@ -42,12 +42,51 @@ public class ConnectYahooFinance{
         //calendar.add(Calendar.DAY_OF_MONTH,1);
         String end_date_format = sdf.format(current_date);
         long end_date_timestamp = (long) (Timestamp.valueOf(end_date_format).getTime())/1000;
+        return end_date_timestamp;
+    }
 
+    public static long GenerateStartTimestamp(){
+        Date current_date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(current_date);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         calendar.add(Calendar.YEAR,-5);
         //calendar.add(Calendar.DAY_OF_MONTH,-1);
         Date start_date = calendar.getTime();
         String start_date_format = sdf.format(start_date);
         long start_date_timestamp = (long) (Timestamp.valueOf(start_date_format).getTime())/1000;
+        return start_date_timestamp;
+    }
+
+    public static long StringtoTimestamp(String Datestr){
+        //get timestamp
+        String Datestr1 = Datestr + " 00:00:00";
+        long timestamp = (long) (Timestamp.valueOf(Datestr1).getTime())/1000;
+        return timestamp;
+    }
+
+    public static ArrayList<StockData> getHistoryData(String symbol, String startdate, String enddate){
+        ArrayList<StockData> history_data = new ArrayList<StockData>();
+        long start_date_timestamp = 0;
+        long end_date_timestamp = 0;
+
+        if(startdate == null && enddate == null){
+            start_date_timestamp = GenerateStartTimestamp();
+            end_date_timestamp = GenerateEndTimestamp();
+        }
+        else if(startdate == null && enddate != null){
+            start_date_timestamp = GenerateStartTimestamp();
+            end_date_timestamp = StringtoTimestamp(enddate);
+        }
+        else if(startdate != null && enddate == null){
+            start_date_timestamp = StringtoTimestamp(startdate);
+            end_date_timestamp = GenerateEndTimestamp();
+        }
+        else{
+            start_date_timestamp = StringtoTimestamp(startdate);
+            end_date_timestamp = StringtoTimestamp(startdate);
+        }
+
 
 
         //get URL string
@@ -101,26 +140,31 @@ public class ConnectYahooFinance{
      */
     public static JSONObject getLiveObjects(String stockSymbol) throws IOException {
         URL url = new URL(YAHOO_FINANCE_SPIDER_URL + stockSymbol);
-        HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-        conn.setRequestProperty("x-api-key", api_key);
+        try {
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("x-api-key", api_key);
 
-        conn.setRequestMethod("GET");
-        conn.setConnectTimeout(5000);
-        conn.connect();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(5000);
+            conn.connect();
 
-        StringBuffer msg = new StringBuffer();
-        InputStream ins  = conn.getInputStream();
+            StringBuffer msg = new StringBuffer();
+            InputStream ins = conn.getInputStream();
 
-        if (ins != null) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(ins, "UTF-8"));
-            String text = null;
-            while((text = br.readLine()) != null){
-                msg.append(text);
+            if (ins != null) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(ins, "UTF-8"));
+                String text = null;
+                while ((text = br.readLine()) != null) {
+                    msg.append(text);
+                }
             }
-        }
 
-        JSONObject object = new JSONObject(msg.toString()).getJSONObject("quoteResponse").getJSONArray("result").getJSONObject(0);
-        return object;
+            JSONObject object = new JSONObject(msg.toString()).getJSONObject("quoteResponse").getJSONArray("result").getJSONObject(0);
+            return object;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 
@@ -132,9 +176,14 @@ public class ConnectYahooFinance{
         Holding[] holdings = DBUtil.getHolding(accounts);
         ArrayList<StockData> list = null;
         for(Holding holding: holdings) {
-            list = getHistoryData(holding.getStockSymbol());
+            list = getHistoryData(holding.getStockSymbol(), null, null);
         }
-        System.out.println(list.get(0).getSymbol());
+        System.out.println(list.size());
+
+        //Test timestamp function
+        String Date = "2017-9-10";
+        long timestamp = StringtoTimestamp(Date);
+        System.out.println(timestamp);
     }
-}
+    }
 
