@@ -33,15 +33,26 @@ public class TradeServlet extends HttpServlet {
             return ;
         }
 
+        String message = null;
         String accountIdString = request.getParameter("chooseAccount");
         String tradeTypeString = request.getParameter("tradeType");
         String stockSymbol = request.getParameter("stockSymbol");  // 还没检验stock symbol是否存在
         int tradeAmount = Integer.parseInt(request.getParameter("tradeAmount"));
+
         JSONObject allInfo = ConnectYahooFinance.getLiveObjects(stockSymbol);
-        String stockName = allInfo.getString("displayName");
+        if (allInfo == null) {
+            message = "Invalid Stock Symbol! Please enter again.";
+            RequestDispatcher dispatcher = request.getRequestDispatcher("stocks.jsp");
+            request.setAttribute("message", message);
+            dispatcher.forward(request, response);
+            return ;
+        }
+        String stockName = allInfo.getString("shortName");
         double tradePrice = allInfo.getDouble("regularMarketPrice");
 
-        String message = DBUtil.tradeStock(accountIdString, tradeTypeString, tradeAmount, tradePrice, stockSymbol, stockName);
+        if (message == null) {
+            message = DBUtil.tradeStock(accountIdString, tradeTypeString, tradeAmount, tradePrice, stockSymbol, stockName);
+        }
 
         if (message == null) {
             message = "Trade Successfully";
