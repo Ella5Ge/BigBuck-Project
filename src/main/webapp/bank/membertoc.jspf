@@ -35,6 +35,7 @@
 		<ul class="sidebar">
 			<li><a id="MenuHyperLink1" href="<%=request.getContextPath()%>/bank/main.jsp">View Account Summary</a></li>
 			<li><a id="MenuHyperLink2" href="<%=request.getContextPath()%>/bank/transaction.jsp">View Recent Transactions</a></li>
+			<li><a id="MenuHyperLink9" href="<%=request.getContextPath()%>/bank/trade.jsp">View Trade Report</a></li>
 			<li><a id="MenuHyperLink3" href="<%=request.getContextPath()%>/bank/transfer.jsp">Transfer Funds</a></li>
 			<li><a id="MenuHyperLink4" href="<%=request.getContextPath()%>/bank/stocks.jsp">Trade Stocks</a></li>
 			<!-- <li><a id="MenuHyperLink3" href="<%=request.getContextPath()%>/bank/stocks.jsp">Trade Stocks</a></li>-->
