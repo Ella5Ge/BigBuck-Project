@@ -7,6 +7,7 @@ import org.json.*;
 
 import java.io.*;
 import java.net.*;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -167,23 +168,107 @@ public class ConnectYahooFinance{
         }
     }
 
+    public static ArrayList<Double> getROR(String stockSymbol, String startDate) {
+        ArrayList<Double> ROR = new ArrayList<Double>();
+        ArrayList<StockData> stock = getHistoryData(stockSymbol, startDate, null);
+        int n = stock.size();
+        for(int i=1; i<n; i++){
+            double day1 = stock.get(i-1).getAdj_close();
+            double day2 = stock.get(i).getAdj_close();
+            double ror = (day2 - day1) / day1;
+            ROR.add(ror);
+        }
+        return ROR;
+    }
+
+    public static ArrayList<Double> getWeight(Holding[] holdings) {
+        double totalValue = 0.0;
+        ArrayList<Double> weight = new ArrayList<Double>();
+        for(Holding holding: holdings){
+            double value = holding.getCostPrice() * holding.getHoldingAmount();
+            totalValue += value;
+        }
+
+        for(Holding holding: holdings){
+            double value = holding.getCostPrice() * holding.getHoldingAmount();
+            weight.add(value/totalValue);
+        }
+        return weight;
+    }
+
+    public static double getVolatility(ArrayList<Double> averages) throws IOException {
+        double volatility = 0.0;
+        double rf = getLiveObjects("%5ETNX").getDouble("regularMarketPrice") / 100;
+        ArrayList<Double> excess_ret = new ArrayList<Double>();
+
+        for(int i=0; i<averages.size(); i++){ //get rp-rf
+            double rp_rf = averages.get(i) - rf;
+            excess_ret.add(rp_rf);
+        }
+
+        double tot_excess_ret = 0.0; // get volatility: stdev of rp-rf
+        for(int i=0; i<excess_ret.size(); i++){
+            tot_excess_ret += excess_ret.get(i);
+        }
+        double avg_excess_ret = tot_excess_ret / excess_ret.size();
+        double sum_diff_mean = 0.0;
+        for(int i=0; i<excess_ret.size(); i++){
+            sum_diff_mean += (excess_ret.get(i) - avg_excess_ret) * (excess_ret.get(i) - avg_excess_ret);
+        }
+        volatility = Math.sqrt(sum_diff_mean / excess_ret.size());
+
+        return volatility;
+    }
+
+
+    public static double getSharpeRatio(Account[] accounts) throws SQLException, IOException {
+        //only for one account!
+        double SharpeRatio = 0.0;
+        Holding[] holdings = DBUtil.getHolding(accounts);
+        ArrayList<Double> weight = getWeight(holdings);
+        double rf = getLiveObjects("%5ETNX").getDouble("regularMarketPrice") / 100;
+
+        ArrayList<Double> averages = new ArrayList<Double>(); //avg return for all stocks
+        for(Holding holding: holdings){
+            String startDate = DBUtil.getStartDate(holding.getAccountId(), holding.getStockSymbol());
+            ArrayList<Double> ror = getROR(holding.getStockSymbol(), startDate);
+            double ror_sum = 0.0;
+            for (int i=0; i<ror.size(); i++){
+                ror_sum += ror.get(i);
+            }
+            double ror_avg = ror_sum / ror.size(); //for one stock
+            averages.add(ror_avg);
+        }
+
+        double rp = 0;//expected portfolio return
+        for(int i=0; i<weight.size(); i++){
+            rp += weight.get(i) * averages.get(i);
+        }
+        System.out.println(rp);
+        System.out.println(rf);
+        double volatility = getVolatility(averages);
+        System.out.println(volatility);
+        SharpeRatio = (rp - rf) / volatility;
+
+        return SharpeRatio;
+    }
+
 
     public static void main(String[] args) throws Exception {
 //        JSONObject msg = getLiveObjects("AAPL");
 //        System.out.println(msg.getDouble("regularMarketPrice"));
 
-        Account[] accounts = new Account[]{DBUtil.getAccount(800002)};
+        Account[] accounts = new Account[]{DBUtil.getAccount(800008)};
         Holding[] holdings = DBUtil.getHolding(accounts);
         ArrayList<StockData> list = null;
-        for(Holding holding: holdings) {
-            list = getHistoryData(holding.getStockSymbol(), null, null);
-        }
-        System.out.println(list.size());
+        ArrayList<Double> ror = new ArrayList<Double>();
+        //ror = getROR("AAPL", "2022-03-01");
+        //System.out.println(ror);
+        //System.out.println(ror.size());
+        double sharpe = getSharpeRatio(accounts);
+        System.out.println(sharpe);
 
-        //Test timestamp function
-        String Date = "2017-9-10";
-        long timestamp = StringtoTimestamp(Date);
-        System.out.println(timestamp);
+
     }
     }
 

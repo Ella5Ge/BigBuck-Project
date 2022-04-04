@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.sql.Timestamp;
 
@@ -868,5 +869,24 @@ public class DBUtil {
 			Log4AltoroJ.getInstance().logError(e.getMessage());
 			return -1;
 		}
+	}
+
+	/**
+	 * Get the start date of Stock
+	 * @param accountIDNumber
+	 * @param stockSymbol
+	 * @return
+	 * @throws SQLException
+	 */
+	public static String getStartDate(long accountIDNumber, String stockSymbol) throws SQLException {
+		Connection connection = getConnection();
+		Statement statement = connection.createStatement();
+
+		ResultSet resultSet = statement.executeQuery("SELECT DATE FROM TRADE WHERE ACCOUNTID ="+ accountIDNumber +" AND STOCKSYMBOL = '"+ stockSymbol +"' ORDER BY DATE ASC");
+		String date = null;
+		if (resultSet.next()) {
+			date = new SimpleDateFormat("yyyy-MM-dd").format(resultSet.getTimestamp("DATE"));
+		}
+		return date;
 	}
 }
