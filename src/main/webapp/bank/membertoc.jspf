@@ -47,7 +47,8 @@
 			<br style="line-height: 10px;"/>
 			<b>ADMINISTRATION</b>
 			<ul class="sidebar">
-				<li><a href="<%=request.getContextPath()%>/admin/admin.jsp">Edit Users</a></li>
+				<li><a id="MenuHyperLink7" href="<%=request.getContextPath()%>/admin/admin.jsp">Edit Users</a></li>
+				<li><a id="MenuHyperLink8" href="<%=request.getContextPath()%>/admin/usertrade.jsp">View Users' Trade Records</a></li>
 			 <% if (ServletUtil.getAppProperty("enableFeedbackRetention").equalsIgnoreCase("true")){ %>
 				<li><a href="<%=request.getContextPath()%>/admin/feedbackReview.jsp">Review Feedback</a></li>
 			<% } %>

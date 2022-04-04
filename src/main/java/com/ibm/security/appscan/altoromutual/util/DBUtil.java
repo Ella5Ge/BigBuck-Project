@@ -348,6 +348,27 @@ public class DBUtil {
 	}
 
 	/**
+	 * Get all Accounts
+	 * @return
+	 * @throws SQLException
+	 */
+	public static Account[] getAllAccounts() throws SQLException {
+		Connection connection = getConnection();
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery("SELECT ACCOUNT_ID, ACCOUNT_NAME, BALANCE FROM ACCOUNTS");
+		ArrayList<Account> accounts = new ArrayList<Account>();
+		while (resultSet.next()){
+			long accountId = resultSet.getLong("ACCOUNT_ID");
+			String name = resultSet.getString("ACCOUNT_NAME");
+			double balance = resultSet.getDouble("BALANCE");
+			Account newAccount = new Account(accountId, name, balance);
+			accounts.add(newAccount);
+		}
+		return accounts.toArray(new Account[accounts.size()]);
+	}
+
+
+	/**
 	 * Transfer funds between specified accounts
 	 * @param username
 	 * @param creditActId

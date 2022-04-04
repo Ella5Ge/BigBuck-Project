@@ -191,6 +191,10 @@
     <url-pattern>/bank/showTransactions</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
+    <servlet-name>AccountViewServlet</servlet-name>
+    <url-pattern>/bank/showTrades</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
     <servlet-name>CCApplyServlet</servlet-name>
     <url-pattern>/bank/ccApply</url-pattern>
   </servlet-mapping>
