@@ -27,6 +27,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.sql.Timestamp;
+import java.util.Calendar;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -526,6 +527,16 @@ public class DBUtil {
 		statement.executeUpdate("UPDATE HOLDINGS SET COSTPRICE = "+ newPrice +" WHERE ACCOUNTID = "+ accountIDNumber +" AND STOCKSYMBOL = '"+ stockSymbol +"' ");
 	}
 
+	public static boolean checkOpenMarket(Timestamp date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		int hour = cal.get(Calendar.HOUR_OF_DAY);
+		int minute = cal.get(Calendar.MINUTE);
+		int day = cal.get(Calendar.DAY_OF_WEEK);
+		boolean open = (hour > 9 || (hour == 9 && minute >= 30)) && (hour < 16) && (day <= 5 && day >= 1);
+		return open;
+	}
+
 
 	/**
 	 * Buy or sell stocks
@@ -555,6 +566,10 @@ public class DBUtil {
 			Account tradeAccount = getAccount(accountIDNumber);
 
 			Timestamp date = new Timestamp(new java.util.Date().getTime());
+			if (!checkOpenMarket(date)) {
+				message = "Fail to trade. The stock market is closed.";
+				return message;
+			}
 
 			double volume = tradeAmount * tradePrice;
 

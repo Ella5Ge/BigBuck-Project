@@ -4,6 +4,7 @@ import com.ibm.security.appscan.altoromutual.util.ConnectYahooFinance;
 import com.ibm.security.appscan.altoromutual.util.DBUtil;
 import com.ibm.security.appscan.altoromutual.util.OperationsUtil;
 import com.ibm.security.appscan.altoromutual.util.ServletUtil;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -38,17 +39,19 @@ public class TradeServlet extends HttpServlet {
         String tradeTypeString = request.getParameter("tradeType");
         String stockSymbol = request.getParameter("stockSymbol");  // 还没检验stock symbol是否存在
         int tradeAmount = Integer.parseInt(request.getParameter("tradeAmount"));
-
-        JSONObject allInfo = ConnectYahooFinance.getLiveObjects(stockSymbol);
-        if (allInfo == null) {
+        String stockName;
+        double tradePrice;
+        try {
+            JSONObject allInfo = ConnectYahooFinance.getLiveObjects(stockSymbol);
+            stockName = allInfo.getString("shortName");
+            tradePrice = allInfo.getDouble("regularMarketPrice");
+        } catch (JSONException e1) {
             message = "Invalid Stock Symbol! Please enter again.";
             RequestDispatcher dispatcher = request.getRequestDispatcher("stocks.jsp");
             request.setAttribute("message", message);
             dispatcher.forward(request, response);
-            return ;
+            return;
         }
-        String stockName = allInfo.getString("shortName");
-        double tradePrice = allInfo.getDouble("regularMarketPrice");
 
         if (message == null) {
             message = DBUtil.tradeStock(accountIdString, tradeTypeString, tradeAmount, tradePrice, stockSymbol, stockName);

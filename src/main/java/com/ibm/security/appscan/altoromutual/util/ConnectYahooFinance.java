@@ -31,7 +31,6 @@ public class ConnectYahooFinance{
      * @param
      * @return
      */
-
     public static long GenerateEndTimestamp(){
         //get timestamp
         Date current_date = new Date();
@@ -226,28 +225,36 @@ public class ConnectYahooFinance{
         double SharpeRatio = 0.0;
         Holding[] holdings = DBUtil.getHolding(accounts);
         ArrayList<Double> weight = getWeight(holdings);
+        System.out.println("weight: " + weight);
         double rf = getLiveObjects("%5ETNX").getDouble("regularMarketPrice") / 100;
 
         ArrayList<Double> averages = new ArrayList<Double>(); //avg return for all stocks
         for(Holding holding: holdings){
             String startDate = DBUtil.getStartDate(holding.getAccountId(), holding.getStockSymbol());
+            System.out.println("Date: " + startDate);
             ArrayList<Double> ror = getROR(holding.getStockSymbol(), startDate);
             double ror_sum = 0.0;
+            System.out.println("ror size: " + ror.size());
             for (int i=0; i<ror.size(); i++){
                 ror_sum += ror.get(i);
+                System.out.println(i + ": " + ror_sum);
             }
             double ror_avg = ror_sum / ror.size(); //for one stock
             averages.add(ror_avg);
         }
+        System.out.println("average: " + averages);
 
         double rp = 0;//expected portfolio return
         for(int i=0; i<weight.size(); i++){
+            if (Double.isNaN(averages.get(i))) {
+                averages.set(i,0.0);
+            }
             rp += weight.get(i) * averages.get(i);
         }
-        System.out.println(rp);
-        System.out.println(rf);
+        System.out.println("rp: " + rp);
+        System.out.println("rf: " + rf);
         double volatility = getVolatility(averages);
-        System.out.println(volatility);
+        System.out.println("volatility: " + volatility);
         SharpeRatio = (rp - rf) / volatility;
 
         return SharpeRatio;
@@ -256,9 +263,9 @@ public class ConnectYahooFinance{
 
     public static void main(String[] args) throws Exception {
 //        JSONObject msg = getLiveObjects("AAPL");
-//        System.out.println(msg.getDouble("regularMarketPrice"));
+//        System.out.println(msg);
 
-        Account[] accounts = new Account[]{DBUtil.getAccount(800008)};
+        Account[] accounts = new Account[]{DBUtil.getAccount(800009)};
         Holding[] holdings = DBUtil.getHolding(accounts);
         ArrayList<StockData> list = null;
         ArrayList<Double> ror = new ArrayList<Double>();
@@ -267,8 +274,6 @@ public class ConnectYahooFinance{
         //System.out.println(ror.size());
         double sharpe = getSharpeRatio(accounts);
         System.out.println(sharpe);
-
-
     }
-    }
+}
 
