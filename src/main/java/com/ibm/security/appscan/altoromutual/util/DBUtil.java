@@ -531,6 +531,9 @@ public class DBUtil {
 		Statement statement = connection.createStatement();
 
 		statement.execute("UPDATE HOLDINGS SET HOLDINGAMOUNT = "+ newAmount +" WHERE ACCOUNTID = "+ accountIDNumber +" AND STOCKSYMBOL = '"+ stockSymbol +"' ");
+		if (newAmount == 0) {
+			statement.execute("DELETE FROM HOLDINGS WHERE ACCOUNTID = "+ accountIDNumber +" AND STOCKSYMBOL = '"+ stockSymbol +"' ");
+		}
 	}
 
 	/**
@@ -716,7 +719,7 @@ public class DBUtil {
 			acctIds.append(" OR ACCOUNTID = "+accounts[i].getAccountId());
 		}
 
-		String query = "SELECT * FROM HOLDINGS WHERE (" + acctIds.toString() + ") ORDER BY ACCOUNTID";
+		String query = "SELECT * FROM HOLDINGS WHERE (" + acctIds.toString() + ") AND HOLDINGAMOUNT != 0 ORDER BY ACCOUNTID";
 		ResultSet resultSet = null;
 		try {
 			resultSet = statement.executeQuery(query);

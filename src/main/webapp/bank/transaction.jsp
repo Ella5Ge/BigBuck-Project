@@ -47,7 +47,7 @@
 				Trade[] trades = DBUtil.getTradeRecords(startString, endString, user.getAccounts(), -1);
 			%>
 
-			<h1>Trade Report</h1>
+			<h1>Transaction</h1>
 
 			<script type="text/javascript">
 				function confirminput(myform) {

@@ -22,8 +22,8 @@ public class ConnectYahooFinance{
 
     public static final String YAHOO_FINANCE_SPIDER_URL = "https://yfapi.net/v6/finance/quote?symbols=";
     // signup up https://www.yahoofinanceapi.com and then get a api key
-    public static final String api_key = "1CSow6sSst2l6pE9WicGLaZFGEsyKrQE6Lb9j8ko";  // limit 100 times
-    // Amber's api-key: Tq9rY48hUn8yBMNoZyxfZ3OyIiNJx44l9PKqKCMN
+    public static final String api_key = "qXwOWzwPzfaHErHKci44H1z87uGUZw8c7VP9wgOQ";  // limit 100 times
+    // Amber's api-key: qXwOWzwPzfaHErHKci44H1z87uGUZw8c7VP9wgOQ
     // Freda's api-key: 1CSow6sSst2l6pE9WicGLaZFGEsyKrQE6Lb9j8ko
 
 
