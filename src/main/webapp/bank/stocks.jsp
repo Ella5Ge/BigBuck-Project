@@ -63,9 +63,7 @@ IBM AltoroJ
 <%--			</span></p>--%>
 					<table cellSpacing="0" cellPadding="1" width="100%" border="0">
 						<tr>
-							<td>
-								Choose Account:
-							</td>
+							<td><strong>Choose Account</strong></td>
 							<td>
 								<select size="1" id="chooseAccount" name="chooseAccount">
 									<%

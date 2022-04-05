@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Timestamp;
 
 
 @WebServlet("/TradeServlet")
@@ -37,8 +38,18 @@ public class TradeServlet extends HttpServlet {
         String message = null;
         String accountIdString = request.getParameter("chooseAccount");
         String tradeTypeString = request.getParameter("tradeType");
-        String stockSymbol = request.getParameter("stockSymbol");  // 还没检验stock symbol是否存在
+        String stockSymbol = request.getParameter("stockSymbol");
         int tradeAmount = Integer.parseInt(request.getParameter("tradeAmount"));
+
+        Timestamp date = new Timestamp(new java.util.Date().getTime());
+        if (!DBUtil.checkOpenMarket(date)) {
+            message = "Fail to trade. The stock market is closed.";
+            RequestDispatcher dispatcher = request.getRequestDispatcher("stocks.jsp");
+            request.setAttribute("message", message);
+            dispatcher.forward(request, response);
+            return;
+        }
+
         String stockName;
         double tradePrice;
         try {
@@ -54,7 +65,7 @@ public class TradeServlet extends HttpServlet {
         }
 
         if (message == null) {
-            message = DBUtil.tradeStock(accountIdString, tradeTypeString, tradeAmount, tradePrice, stockSymbol, stockName);
+            message = DBUtil.tradeStock(accountIdString, tradeTypeString, tradeAmount, tradePrice, stockSymbol, stockName, date);
         }
 
         if (message == null) {

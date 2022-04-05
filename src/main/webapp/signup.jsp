@@ -15,7 +15,7 @@
     <td valign="top" colspan="3" class="bb">
         <div class="fl" style="width: 99%;">
 
-            <h1>Online Banking Sign Up</h1>
+            <h1>Create a New User Account</h1>
             <p><span id="_ctl0__ctl0_Content_Main_message" style="color:#FF0066;font-size:12pt;font-weight:bold;">
                 <%
                     java.lang.String error = (String)request.getSession(true).getAttribute("loginError");
@@ -28,19 +28,6 @@
 
             <form action="SignupServlet" method="post" name="signup" id="signup" onsubmit="return (confirminput(signup));">
                 <table>
-                    <tr>
-                        <td>
-                            Role:
-                        </td>
-                        <td>
-                            <select name="role" id="role" value="" style="width: 150px;">
-                                <option value="user">User</option>
-                                <option value="admin">Admin</option>
-                            </select>
-                        </td>
-                        <td>
-                        </td>
-                    </tr>
                     <tr>
                         <td>
                             First Name:

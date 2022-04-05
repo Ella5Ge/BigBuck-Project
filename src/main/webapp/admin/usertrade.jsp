@@ -16,17 +16,40 @@
     <%@ page import="java.sql.SQLException" %>
     <%@ page import="java.sql.Timestamp" %>
     <%@ page import="java.text.SimpleDateFormat" %>
+    <%@ page import="com.ibm.security.appscan.altoromutual.util.ConnectYahooFinance" %>
 
 
     <div class="fl" style="width: 99%;">
       <%
-        Account[] allAccounts = DBUtil.getAllAccounts();
+        Account[] allAccounts = DBUtil.getAllTradeAccounts();
+        Holding[] holdings = DBUtil.getHolding(allAccounts);
       %>
       <h1>Users Summary</h1>
       <form id="trades" name="trades" method="post" action="/admin/viewTrade">
         <table width="700" border="0" style="padding-bottom:10px;">
           <tr><td>
-            <br><b>User's Holding Records</b>
+            <br><h2>Users' Sharpe Ratio</h2>
+            <table border=1 cellpadding=2 cellspacing=0 width='200'>
+              <tr style="color:Black;background-color:#BFD7DA;font-weight:bold;">
+                <th width=90>Account ID</th>
+                <th width=90>Sharpe Ratio</th>
+              </tr>
+            </table>
+            <DIV ID='userSharpeRatio' STYLE='width:590px; padding:0px; margin: 0px' ><table border=1 cellpadding=2 cellspacing=0 width='200'>
+              <%
+                for (Account account: allAccounts) {
+                  double sharpe_ratio = ConnectYahooFinance.getSharpeRatio(new Account[]{account});
+                  String sharpeRatioStr = String.format("%.2f", sharpe_ratio);
+              %>
+              <tr>
+                <td width=90><%=account.getAccountId()%></td>
+                <td width=90 align=right><%=sharpeRatioStr%></td>
+              </tr>
+              <% } %>
+            </table></DIV>
+          </td></tr>
+          <tr><td>
+            <br><h2>User's Holding Records</h2>
             <table border=1 cellpadding=2 cellspacing=0 width='540'>
               <tr style="color:Black;background-color:#BFD7DA;font-weight:bold;">
                 <th width=90>Account ID</th>
@@ -37,7 +60,7 @@
               </tr>
             </table>
             <DIV ID='userHolding' STYLE='width:590px; padding:0px; margin: 0px' ><table border=1 cellpadding=2 cellspacing=0 width='540'>
-              <% Holding[] holdings = DBUtil.getHolding(allAccounts);
+              <%
                 for (Holding holding: holdings) {
                   double dblcostPrice = holding.getCostPrice();
                   String dollarFormat = (dblcostPrice<1)?"$0.00":"$.00";
@@ -54,7 +77,7 @@
             </table></DIV>
           </td></tr>
           <tr><td>
-            <br><b>Today's Trade Records</b>
+            <br><h2>Today's Trade Records</h2>
             <table border=1 cellpadding=2 cellspacing=0 width='700'>
               <tr style="color:Black;background-color:#BFD7DA;font-weight:bold;">
                 <th width=90>Trade ID</th>

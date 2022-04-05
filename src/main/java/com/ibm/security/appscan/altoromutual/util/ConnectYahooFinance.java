@@ -22,8 +22,9 @@ public class ConnectYahooFinance{
 
     public static final String YAHOO_FINANCE_SPIDER_URL = "https://yfapi.net/v6/finance/quote?symbols=";
     // signup up https://www.yahoofinanceapi.com and then get a api key
-    public static final String api_key = "1CSow6sSst2l6pE9WicGLaZFGEsyKrQE6Lb9j8ko";
+    public static final String api_key = "1CSow6sSst2l6pE9WicGLaZFGEsyKrQE6Lb9j8ko";  // limit 100 times
     // Amber's api-key: Tq9rY48hUn8yBMNoZyxfZ3OyIiNJx44l9PKqKCMN
+    // Freda's api-key: 1CSow6sSst2l6pE9WicGLaZFGEsyKrQE6Lb9j8ko
 
 
     /**
@@ -87,8 +88,6 @@ public class ConnectYahooFinance{
             end_date_timestamp = StringtoTimestamp(startdate);
         }
 
-
-
         //get URL string
         String time_params = "?period1=" + start_date_timestamp + "&period2=" + end_date_timestamp;
         String url = YAHOO_FINANCE_URL_START + symbol + time_params + YAHOO_FINANCE_URL_END;
@@ -131,7 +130,6 @@ public class ConnectYahooFinance{
             }
         }
         return history_data;
-
     }
 
     /**
@@ -182,7 +180,7 @@ public class ConnectYahooFinance{
 
     public static ArrayList<Double> getWeight(Holding[] holdings) {
         double totalValue = 0.0;
-        ArrayList<Double> weight = new ArrayList<Double>();
+        ArrayList<Double> weight = new ArrayList<>();
         for(Holding holding: holdings){
             double value = holding.getCostPrice() * holding.getHoldingAmount();
             totalValue += value;
@@ -195,10 +193,9 @@ public class ConnectYahooFinance{
         return weight;
     }
 
-    public static double getVolatility(ArrayList<Double> averages) throws IOException {
+    public static double getVolatility(ArrayList<Double> averages, double rf) throws IOException {
         double volatility = 0.0;
-        double rf = getLiveObjects("%5ETNX").getDouble("regularMarketPrice") / 100;
-        ArrayList<Double> excess_ret = new ArrayList<Double>();
+        ArrayList<Double> excess_ret = new ArrayList<>();
 
         for(int i=0; i<averages.size(); i++){ //get rp-rf
             double rp_rf = averages.get(i) - rf;
@@ -226,7 +223,9 @@ public class ConnectYahooFinance{
         Holding[] holdings = DBUtil.getHolding(accounts);
         ArrayList<Double> weight = getWeight(holdings);
         System.out.println("weight: " + weight);
-        double rf = getLiveObjects("%5ETNX").getDouble("regularMarketPrice") / 100;
+        //double rf = getLiveObjects("%5ETNX").getDouble("regularMarketPrice") / 100;
+        ArrayList<StockData> treasury_data = getHistoryData("%5ETNX","2022-04-05", null);
+        double rf = treasury_data.get(treasury_data.size()-1).getAdj_close() / 100;
 
         ArrayList<Double> averages = new ArrayList<Double>(); //avg return for all stocks
         for(Holding holding: holdings){
@@ -253,7 +252,10 @@ public class ConnectYahooFinance{
         }
         System.out.println("rp: " + rp);
         System.out.println("rf: " + rf);
-        double volatility = getVolatility(averages);
+        if (averages.size() == 1) {
+            averages = getROR(holdings[0].getStockSymbol(),null);
+        }
+        double volatility = getVolatility(averages, rf);
         System.out.println("volatility: " + volatility);
         SharpeRatio = (rp - rf) / volatility;
 
@@ -265,7 +267,7 @@ public class ConnectYahooFinance{
 //        JSONObject msg = getLiveObjects("AAPL");
 //        System.out.println(msg);
 
-        Account[] accounts = new Account[]{DBUtil.getAccount(800009)};
+        Account[] accounts = new Account[]{DBUtil.getAccount(800000)};
         Holding[] holdings = DBUtil.getHolding(accounts);
         ArrayList<StockData> list = null;
         ArrayList<Double> ror = new ArrayList<Double>();

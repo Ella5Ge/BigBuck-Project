@@ -356,7 +356,7 @@ public class DBUtil {
 	public static Account[] getAllAccounts() throws SQLException {
 		Connection connection = getConnection();
 		Statement statement = connection.createStatement();
-		ResultSet resultSet = statement.executeQuery("SELECT ACCOUNT_ID, ACCOUNT_NAME, BALANCE FROM ACCOUNTS");
+		ResultSet resultSet = statement.executeQuery("SELECT ACCOUNT_ID, ACCOUNT_NAME, BALANCE FROM ACCOUNTS ORDER BY ACCOUNT_ID ASC");
 		ArrayList<Account> accounts = new ArrayList<Account>();
 		while (resultSet.next()){
 			long accountId = resultSet.getLong("ACCOUNT_ID");
@@ -364,6 +364,23 @@ public class DBUtil {
 			double balance = resultSet.getDouble("BALANCE");
 			Account newAccount = new Account(accountId, name, balance);
 			accounts.add(newAccount);
+		}
+		return accounts.toArray(new Account[accounts.size()]);
+	}
+
+	/**
+	 * Get all Trading Account
+	 * @return
+	 * @throws SQLException
+	 */
+	public static Account[] getAllTradeAccounts() throws SQLException {
+		Connection connection = getConnection();
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery("SELECT DISTINCT ACCOUNTID FROM HOLDINGS ORDER BY ACCOUNTID ASC");
+		ArrayList<Account> accounts = new ArrayList<>();
+		while (resultSet.next()){
+			Account account = getAccount(resultSet.getLong("ACCOUNTID"));
+			accounts.add(account);
 		}
 		return accounts.toArray(new Account[accounts.size()]);
 	}
@@ -548,7 +565,7 @@ public class DBUtil {
 	 * Still need to refactor --> partially finish
 	 * Still need to test --> partially finish --> do not include all test cases
 	 */
-	public static String tradeStock(String tradeAccountID, String tradeType, int tradeAmount, double tradePrice, String stockSymbol, String stockName) {
+	public static String tradeStock(String tradeAccountID, String tradeType, int tradeAmount, double tradePrice, String stockSymbol, String stockName, Timestamp date) {
 		String message = null;
 		try {
 			Long accountIDNumber = Long.parseLong(tradeAccountID);
@@ -564,12 +581,6 @@ public class DBUtil {
 			}
 
 			Account tradeAccount = getAccount(accountIDNumber);
-
-			Timestamp date = new Timestamp(new java.util.Date().getTime());
-			if (!checkOpenMarket(date)) {
-				message = "Fail to trade. The stock market is closed.";
-				return message;
-			}
 
 			double volume = tradeAmount * tradePrice;
 
@@ -705,7 +716,7 @@ public class DBUtil {
 			acctIds.append(" OR ACCOUNTID = "+accounts[i].getAccountId());
 		}
 
-		String query = "SELECT * FROM HOLDINGS WHERE (" + acctIds.toString() + ")";
+		String query = "SELECT * FROM HOLDINGS WHERE (" + acctIds.toString() + ") ORDER BY ACCOUNTID";
 		ResultSet resultSet = null;
 		try {
 			resultSet = statement.executeQuery(query);
