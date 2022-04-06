@@ -116,7 +116,6 @@ public class ConnectYahooFinance{
                 hisdata_5years.setAdj_close(Float.valueOf(stockInfo[5]));
                 hisdata_5years.setVolume(Float.valueOf(stockInfo[6]));
                 history_data.add(hisdata_5years);
-
             }
         } catch (Exception e) {
             return null;
