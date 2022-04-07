@@ -47,44 +47,44 @@ public class DBUtil {
 
 	private static final String PROTOCOL = "jdbc:derby:";
 	private static final String DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
-	
+
 	public static final String CREDIT_CARD_ACCOUNT_NAME = "Credit Card";
 	public static final String CHECKING_ACCOUNT_NAME = "Checking";
 	public static final String SAVINGS_ACCOUNT_NAME = "Savings";
-	
+
 	public static final double CASH_ADVANCE_FEE = 2.50;
-	
+
 	private static DBUtil instance = null;
 	private Connection connection = null;
 	private DataSource dataSource = null;
-	
+
 	//private constructor
-	private DBUtil(){
+	private DBUtil() {
 		/*
-**
-**			Default location for the database is current directory:
-**			System.out.println(System.getProperty("user.home"));
-**			to change DB location, set derby.system.home property:
-**			System.setProperty("derby.system.home", "[new_DB_location]");
-**
-		*/
-		
+		 **
+		 **			Default location for the database is current directory:
+		 **			System.out.println(System.getProperty("user.home"));
+		 **			to change DB location, set derby.system.home property:
+		 **			System.setProperty("derby.system.home", "[new_DB_location]");
+		 **
+		 */
+
 		String dataSourceName = ServletUtil.getAppProperty("database.alternateDataSource");
-		
+
 		/* Connect to an external database (e.g. DB2) */
-		if (dataSourceName != null && dataSourceName.trim().length() > 0){
+		if (dataSourceName != null && dataSourceName.trim().length() > 0) {
 			try {
 				Context initialContext = new InitialContext();
 				Context environmentContext = (Context) initialContext.lookup("java:comp/env");
-				dataSource = (DataSource)environmentContext.lookup(dataSourceName.trim());
+				dataSource = (DataSource) environmentContext.lookup(dataSourceName.trim());
 			} catch (Exception e) {
 				e.printStackTrace();
-				Log4AltoroJ.getInstance().logError(e.getMessage());		
+				Log4AltoroJ.getInstance().logError(e.getMessage());
 			}
-			
-		/* Initialize connection to the integrated Apache Derby DB*/	
+
+			/* Initialize connection to the integrated Apache Derby DB*/
 		} else {
-			System.setProperty("derby.system.home", System.getProperty("user.home")+"/altoro/");
+			System.setProperty("derby.system.home", System.getProperty("user.home") + "/altoro/");
 			System.out.println("Derby Home=" + System.getProperty("derby.system.home"));
 
 			try {
@@ -97,55 +97,55 @@ public class DBUtil {
 		}
 	}
 
-	private static Connection getConnection() throws SQLException{
+	private static Connection getConnection() throws SQLException {
 
 		if (instance == null)
 			instance = new DBUtil();
-		
-		if (instance.connection == null || instance.connection.isClosed()){
-			
+
+		if (instance.connection == null || instance.connection.isClosed()) {
+
 			//If there is a custom data source configured use it to initialize
-			if (instance.dataSource != null){
-				instance.connection = instance.dataSource.getConnection();	
-				
-				if (ServletUtil.isAppPropertyTrue("database.reinitializeOnStart")){
+			if (instance.dataSource != null) {
+				instance.connection = instance.dataSource.getConnection();
+
+				if (ServletUtil.isAppPropertyTrue("database.reinitializeOnStart")) {
 					instance.initDB();
 				}
 				return instance.connection;
 			}
-			
+
 			// otherwise initialize connection to the built-in Derby database
 			try {
 				//attempt to connect to the database
-				instance.connection = DriverManager.getConnection(PROTOCOL+"altoro");
-				
-				if (ServletUtil.isAppPropertyTrue("database.reinitializeOnStart")){
+				instance.connection = DriverManager.getConnection(PROTOCOL + "altoro");
+
+				if (ServletUtil.isAppPropertyTrue("database.reinitializeOnStart")) {
 					instance.initDB();
 				}
-			} catch (SQLException e){
+			} catch (SQLException e) {
 				//if database does not exist, create it an initialize it
-				if (e.getErrorCode() == 40000){
-					instance.connection = DriverManager.getConnection(PROTOCOL+"altoro;create=true");
+				if (e.getErrorCode() == 40000) {
+					instance.connection = DriverManager.getConnection(PROTOCOL + "altoro;create=true");
 					instance.initDB();
-				//otherwise pass along the exception
+					//otherwise pass along the exception
 				} else {
 					throw e;
 				}
 			}
 
 		}
-		
-		return instance.connection;	
+
+		return instance.connection;
 	}
 
-	
+
 	/*
 	 * Create and initialize the database
 	 */
-	private void initDB() throws SQLException{
-		
+	private void initDB() throws SQLException {
+
 		Statement statement = connection.createStatement();
-		
+
 		try {
 			statement.execute("DROP TABLE PEOPLE");
 			statement.execute("DROP TABLE ACCOUNTS");
@@ -156,7 +156,7 @@ public class DBUtil {
 		} catch (SQLException e) {
 			// not a problem
 		}
-		
+
 		statement.execute("CREATE TABLE PEOPLE (USER_ID VARCHAR(50) NOT NULL, PASSWORD VARCHAR(20) NOT NULL, " +
 				"FIRST_NAME VARCHAR(100) NOT NULL, LAST_NAME VARCHAR(100) NOT NULL, " +
 				"ROLE VARCHAR(50) NOT NULL, PRIMARY KEY (USER_ID))");
@@ -174,6 +174,9 @@ public class DBUtil {
 				"TRADEAMOUNT INTEGER NOT NULL, TRADEPRICE DOUBLE NOT NULL, PRIMARY KEY (TRADE_ID))");
 		statement.execute("CREATE TABLE HOLDINGS (ACCOUNTID BIGINT NOT NULL, STOCKSYMBOL VARCHAR(50) NOT NULL, STOCKNAME VARCHAR(100) NOT NULL, " +
 				"HOLDINGAMOUNT INTEGER NOT NULL, COSTPRICE DOUBLE NOT NULL)");
+		statement.execute("CREATE TABLE STOCKDATA (STOCK_SYMBOL VARCHAR(50) NOT NULL, DATE VARCHAR(50) NOT NULL, S_OPEN DOUBLE NOT NULL, S_CLOSE DOUBLE NOT NULL, " +
+				"S_HIGH DOUBLE NOT NULL, S_LOW DOUBLE NOT NULL, S_ADJ_CLOSE DOUBLE NOT NULL, S_VOLUME DOUBLE NOT NULL)");
+
 
 		statement.execute("INSERT INTO PEOPLE (USER_ID,PASSWORD,FIRST_NAME,LAST_NAME,ROLE) " +
 				"VALUES ('admin', 'admin', 'Admin', 'User','admin'), " +
@@ -184,17 +187,17 @@ public class DBUtil {
 
 		statement.execute("INSERT INTO ACCOUNTS (USERID,ACCOUNT_NAME,BALANCE) " +
 				"VALUES ('admin','Corporate', 52394783.61), " +
-				"('admin','"+CHECKING_ACCOUNT_NAME+"', 93820.44), " +
-				"('jsmith','"+SAVINGS_ACCOUNT_NAME+"', 10000.42), " +
-				"('jsmith','"+CHECKING_ACCOUNT_NAME+"', 15000.39), " +
-				"('jdoe','"+SAVINGS_ACCOUNT_NAME+"', 10.00), " +
-				"('jdoe','"+CHECKING_ACCOUNT_NAME+"', 25.00), " +
-				"('sspeed','"+SAVINGS_ACCOUNT_NAME+"', 59102.00), " +
-				"('sspeed','"+CHECKING_ACCOUNT_NAME+"', 150.00)");
+				"('admin','" + CHECKING_ACCOUNT_NAME + "', 93820.44), " +
+				"('jsmith','" + SAVINGS_ACCOUNT_NAME + "', 10000.42), " +
+				"('jsmith','" + CHECKING_ACCOUNT_NAME + "', 15000.39), " +
+				"('jdoe','" + SAVINGS_ACCOUNT_NAME + "', 10.00), " +
+				"('jdoe','" + CHECKING_ACCOUNT_NAME + "', 25.00), " +
+				"('sspeed','" + SAVINGS_ACCOUNT_NAME + "', 59102.00), " +
+				"('sspeed','" + CHECKING_ACCOUNT_NAME + "', 150.00)");
 
 		statement.execute("INSERT INTO ACCOUNTS (ACCOUNT_ID,USERID,ACCOUNT_NAME,BALANCE) " +
-				"VALUES (4539082039396288,'jsmith','"+CREDIT_CARD_ACCOUNT_NAME+"', 100.42)," +
-				"(4485983356242217,'jdoe','"+CREDIT_CARD_ACCOUNT_NAME+"', 10000.97)");
+				"VALUES (4539082039396288,'jsmith','" + CREDIT_CARD_ACCOUNT_NAME + "', 100.42)," +
+				"(4485983356242217,'jdoe','" + CREDIT_CARD_ACCOUNT_NAME + "', 10000.97)");
 
 		statement.execute("INSERT INTO TRANSACTIONS (ACCOUNTID,DATE,TYPE,AMOUNT) " +
 				"VALUES (800003,'2017-03-19 15:02:19.47','Withdrawal', -100.72), " +
@@ -229,24 +232,25 @@ public class DBUtil {
 
 	/**
 	 * Retrieve feedback details
+	 *
 	 * @param feedbackId specific feedback ID to retrieve or Feedback.FEEDBACK_ALL to retrieve all stored feedback submissions
 	 */
-	public static ArrayList<Feedback> getFeedback (long feedbackId){
+	public static ArrayList<Feedback> getFeedback(long feedbackId) {
 		ArrayList<Feedback> feedbackList = new ArrayList<Feedback>();
-		
-		try { 
+
+		try {
 			Connection connection = getConnection();
 			Statement statement = connection.createStatement();
-			
+
 			String query = "SELECT * FROM FEEDBACK";
-			
-			if (feedbackId != Feedback.FEEDBACK_ALL){
-				query = query + " WHERE FEEDBACK_ID = "+ feedbackId +"";
+
+			if (feedbackId != Feedback.FEEDBACK_ALL) {
+				query = query + " WHERE FEEDBACK_ID = " + feedbackId + "";
 			}
-			
+
 			ResultSet resultSet = statement.executeQuery(query);
-	
-			while (resultSet.next()){
+
+			while (resultSet.next()) {
 				String name = resultSet.getString("NAME");
 				String email = resultSet.getString("EMAIL");
 				String subject = resultSet.getString("SUBJECT");
@@ -258,98 +262,102 @@ public class DBUtil {
 		} catch (SQLException e) {
 			Log4AltoroJ.getInstance().logError("Error retrieving feedback: " + e.getMessage());
 		}
-		
+
 		return feedbackList;
 	}
-	
-	
+
+
 	/**
 	 * Authenticate user
-	 * @param user user name
+	 *
+	 * @param user     user name
 	 * @param password password
 	 * @return true if valid user, false otherwise
 	 * @throws SQLException
 	 */
-	public static boolean isValidUser(String user, String password) throws SQLException{
+	public static boolean isValidUser(String user, String password) throws SQLException {
 		if (user == null || password == null || user.trim().length() == 0 || password.trim().length() == 0)
-			return false; 
-		
+			return false;
+
 		Connection connection = getConnection();
 		Statement statement = connection.createStatement();
-		
-		ResultSet resultSet =statement.executeQuery("SELECT COUNT(*)FROM PEOPLE WHERE USER_ID = '"+ user +"' AND PASSWORD='" + password + "'"); /* BAD - user input should always be sanitized */
-		
-		if (resultSet.next()){
-			
-				if (resultSet.getInt(1) > 0)
-					return true;
+
+		ResultSet resultSet = statement.executeQuery("SELECT COUNT(*)FROM PEOPLE WHERE USER_ID = '" + user + "' AND PASSWORD='" + password + "'"); /* BAD - user input should always be sanitized */
+
+		if (resultSet.next()) {
+
+			if (resultSet.getInt(1) > 0)
+				return true;
 		}
 		return false;
 	}
-	
+
 
 	/**
 	 * Get user information
+	 *
 	 * @param username
 	 * @return user information
 	 * @throws SQLException
 	 */
-	public static User getUserInfo(String username) throws SQLException{
+	public static User getUserInfo(String username) throws SQLException {
 		if (username == null || username.trim().length() == 0)
-			return null; 
-		
+			return null;
+
 		Connection connection = getConnection();
 		Statement statement = connection.createStatement();
-		ResultSet resultSet =statement.executeQuery("SELECT FIRST_NAME,LAST_NAME,ROLE FROM PEOPLE WHERE USER_ID = '"+ username +"' "); /* BAD - user input should always be sanitized */
+		ResultSet resultSet = statement.executeQuery("SELECT FIRST_NAME,LAST_NAME,ROLE FROM PEOPLE WHERE USER_ID = '" + username + "' "); /* BAD - user input should always be sanitized */
 
 		String firstName = null;
 		String lastName = null;
 		String roleString = null;
-		if (resultSet.next()){
+		if (resultSet.next()) {
 			firstName = resultSet.getString("FIRST_NAME");
 			lastName = resultSet.getString("LAST_NAME");
 			roleString = resultSet.getString("ROLE");
 		}
-		
+
 		if (firstName == null || lastName == null)
 			return null;
-		
+
 		User user = new User(username, firstName, lastName);
-		
+
 		if (roleString.equalsIgnoreCase("admin"))
 			user.setRole(Role.Admin);
-		
+
 		return user;
 	}
 
 	/**
 	 * Get all accounts for the specified user
+	 *
 	 * @param username
 	 * @return
 	 * @throws SQLException
 	 */
-	public static Account[] getAccounts(String username) throws SQLException{
+	public static Account[] getAccounts(String username) throws SQLException {
 		if (username == null || username.trim().length() == 0)
-			return null; 
-		
+			return null;
+
 		Connection connection = getConnection();
 		Statement statement = connection.createStatement();
-		ResultSet resultSet =statement.executeQuery("SELECT ACCOUNT_ID, ACCOUNT_NAME, BALANCE FROM ACCOUNTS WHERE USERID = '"+ username +"' "); /* BAD - user input should always be sanitized */
+		ResultSet resultSet = statement.executeQuery("SELECT ACCOUNT_ID, ACCOUNT_NAME, BALANCE FROM ACCOUNTS WHERE USERID = '" + username + "' "); /* BAD - user input should always be sanitized */
 
 		ArrayList<Account> accounts = new ArrayList<Account>(3);
-		while (resultSet.next()){
+		while (resultSet.next()) {
 			long accountId = resultSet.getLong("ACCOUNT_ID");
 			String name = resultSet.getString("ACCOUNT_NAME");
-			double balance = resultSet.getDouble("BALANCE"); 
+			double balance = resultSet.getDouble("BALANCE");
 			Account newAccount = new Account(accountId, name, balance);
 			accounts.add(newAccount);
 		}
-		
+
 		return accounts.toArray(new Account[accounts.size()]);
 	}
 
 	/**
 	 * Get all Accounts
+	 *
 	 * @return
 	 * @throws SQLException
 	 */
@@ -358,7 +366,7 @@ public class DBUtil {
 		Statement statement = connection.createStatement();
 		ResultSet resultSet = statement.executeQuery("SELECT ACCOUNT_ID, ACCOUNT_NAME, BALANCE FROM ACCOUNTS ORDER BY ACCOUNT_ID ASC");
 		ArrayList<Account> accounts = new ArrayList<Account>();
-		while (resultSet.next()){
+		while (resultSet.next()) {
 			long accountId = resultSet.getLong("ACCOUNT_ID");
 			String name = resultSet.getString("ACCOUNT_NAME");
 			double balance = resultSet.getDouble("BALANCE");
@@ -370,6 +378,7 @@ public class DBUtil {
 
 	/**
 	 * Get all Trading Account
+	 *
 	 * @return
 	 * @throws SQLException
 	 */
@@ -378,7 +387,7 @@ public class DBUtil {
 		Statement statement = connection.createStatement();
 		ResultSet resultSet = statement.executeQuery("SELECT DISTINCT ACCOUNTID FROM HOLDINGS ORDER BY ACCOUNTID ASC");
 		ArrayList<Account> accounts = new ArrayList<>();
-		while (resultSet.next()){
+		while (resultSet.next()) {
 			Account account = getAccount(resultSet.getLong("ACCOUNTID"));
 			accounts.add(account);
 		}
@@ -388,6 +397,7 @@ public class DBUtil {
 
 	/**
 	 * Transfer funds between specified accounts
+	 *
 	 * @param username
 	 * @param creditActId
 	 * @param debitActId
@@ -395,66 +405,85 @@ public class DBUtil {
 	 * @return
 	 */
 	public static String transferFunds(String username, long creditActId, long debitActId, double amount) {
-				
+
 		try {
-			
+
 			User user = getUserInfo(username);
-			
+
 			Connection connection = getConnection();
 			Statement statement = connection.createStatement();
 
 			Account debitAccount = Account.getAccount(debitActId);
 			Account creditAccount = Account.getAccount(creditActId);
 
-			if (debitAccount == null){
+			if (debitAccount == null) {
 				return "Originating account is invalid";
-			} 
-			
+			}
+
 			if (creditAccount == null)
 				return "Destination account is invalid";
-			
+
 			java.sql.Timestamp date = new Timestamp(new java.util.Date().getTime());
-			
+
 			//in real life we would want to do these updates and transaction entry creation
 			//as one atomic operation
-			
+
 			long userCC = user.getCreditCardNumber();
-			
+
 			/* this is the account that the payment will be made from, thus negative amount!*/
-			double debitAmount = -amount; 
+			double debitAmount = -amount;
 			/* this is the account that the payment will be made to, thus positive amount!*/
 			double creditAmount = amount;
-			
-			/* Credit card account balance is the amount owed, not amount owned 
+
+			/* Credit card account balance is the amount owed, not amount owned
 			 * (reverse of other accounts). Therefore we have to process balances differently*/
 			if (debitAccount.getAccountId() == userCC)
 				debitAmount = -debitAmount;
-		
-			//create transaction record
-			statement.execute("INSERT INTO TRANSACTIONS (ACCOUNTID, DATE, TYPE, AMOUNT) VALUES ("+debitAccount.getAccountId()+",'"+date+"',"+((debitAccount.getAccountId() == userCC)?"'Cash Advance'":"'Withdrawal'")+","+debitAmount+")," +
-					  "("+creditAccount.getAccountId()+",'"+date+"',"+((creditAccount.getAccountId() == userCC)?"'Payment'":"'Deposit'")+","+creditAmount+")"); 	
 
-			Log4AltoroJ.getInstance().logTransaction(debitAccount.getAccountId()+" - "+ debitAccount.getAccountName(), creditAccount.getAccountId()+" - "+ creditAccount.getAccountName(), amount);
-			
+			//create transaction record
+			statement.execute("INSERT INTO TRANSACTIONS (ACCOUNTID, DATE, TYPE, AMOUNT) VALUES (" + debitAccount.getAccountId() + ",'" + date + "'," + ((debitAccount.getAccountId() == userCC) ? "'Cash Advance'" : "'Withdrawal'") + "," + debitAmount + ")," +
+					"(" + creditAccount.getAccountId() + ",'" + date + "'," + ((creditAccount.getAccountId() == userCC) ? "'Payment'" : "'Deposit'") + "," + creditAmount + ")");
+
+			Log4AltoroJ.getInstance().logTransaction(debitAccount.getAccountId() + " - " + debitAccount.getAccountName(), creditAccount.getAccountId() + " - " + creditAccount.getAccountName(), amount);
+
 			if (creditAccount.getAccountId() == userCC)
-				 creditAmount = -creditAmount;
-			
+				creditAmount = -creditAmount;
+
 			//add cash advance fee since the money transfer was made from the credit card 
-			if (debitAccount.getAccountId() == userCC){
-				statement.execute("INSERT INTO TRANSACTIONS (ACCOUNTID, DATE, TYPE, AMOUNT) VALUES ("+debitAccount.getAccountId()+",'"+date+"','Cash Advance Fee',"+CASH_ADVANCE_FEE+")");
+			if (debitAccount.getAccountId() == userCC) {
+				statement.execute("INSERT INTO TRANSACTIONS (ACCOUNTID, DATE, TYPE, AMOUNT) VALUES (" + debitAccount.getAccountId() + ",'" + date + "','Cash Advance Fee'," + CASH_ADVANCE_FEE + ")");
 				debitAmount += CASH_ADVANCE_FEE;
 				Log4AltoroJ.getInstance().logTransaction(String.valueOf(userCC), "N/A", CASH_ADVANCE_FEE);
 			}
-						
+
 			//update account balances
-			statement.execute("UPDATE ACCOUNTS SET BALANCE = " + (debitAccount.getBalance()+debitAmount) + " WHERE ACCOUNT_ID = " + debitAccount.getAccountId());
-			statement.execute("UPDATE ACCOUNTS SET BALANCE = " + (creditAccount.getBalance()+creditAmount) + " WHERE ACCOUNT_ID = " + creditAccount.getAccountId());
-			
+			statement.execute("UPDATE ACCOUNTS SET BALANCE = " + (debitAccount.getBalance() + debitAmount) + " WHERE ACCOUNT_ID = " + debitAccount.getAccountId());
+			statement.execute("UPDATE ACCOUNTS SET BALANCE = " + (creditAccount.getBalance() + creditAmount) + " WHERE ACCOUNT_ID = " + creditAccount.getAccountId());
+
 			return null;
-			
+
 		} catch (SQLException e) {
 			return "Transaction failed. Please try again later.";
 		}
+	}
+
+
+	/**
+	 * Get a list of all users' holding stock
+	 * @return a list of stock symbols
+	 * @throws SQLException for sql statement
+	 */
+	public static ArrayList<String> getAllStockSymbol() throws SQLException {
+		Connection connection = getConnection();
+		Statement statement = connection.createStatement();
+
+		ArrayList<String> list = new ArrayList<>();
+		ResultSet resultSet = statement.executeQuery("SELECT DISTINCT STOCKSYMBOL FROM HOLDINGS");
+		while (resultSet.next()) {
+			String symbol = resultSet.getString("STOCKSYMBOL");
+			list.add(symbol);
+		}
+		return list;
 	}
 
 
@@ -466,7 +495,7 @@ public class DBUtil {
 		Statement statement = connection.createStatement();
 
 		statement.execute("INSERT INTO TRADE (ACCOUNTID, DATE, TYPE, STOCKSYMBOL, STOCKNAME, TRADEAMOUNT, TRADEPRICE) " +
-				"VALUES ("+accountIDNumber+",'"+date+"','"+tradeType+"','"+stockSymbol+"', '"+stockName+"',"+tradeAmount+","+tradePrice+")");
+				"VALUES (" + accountIDNumber + ",'" + date + "','" + tradeType + "','" + stockSymbol + "', '" + stockName + "'," + tradeAmount + "," + tradePrice + ")");
 	}
 
 	/**
@@ -476,7 +505,7 @@ public class DBUtil {
 		Connection connection = getConnection();
 		Statement statement = connection.createStatement();
 
-		statement.execute("UPDATE ACCOUNTS SET BALANCE = "+ newBalance +" WHERE ACCOUNT_ID = "+ accountIDNumber);
+		statement.execute("UPDATE ACCOUNTS SET BALANCE = " + newBalance + " WHERE ACCOUNT_ID = " + accountIDNumber);
 	}
 
 	/**
@@ -486,7 +515,7 @@ public class DBUtil {
 		Connection connection = getConnection();
 		Statement statement = connection.createStatement();
 		int amount = 0;
-		ResultSet resultSet = statement.executeQuery("SELECT HOLDINGAMOUNT FROM HOLDINGS WHERE ACCOUNTID = "+ accountIDNumber +" AND STOCKSYMBOL = '"+ stockSymbol +"' ");
+		ResultSet resultSet = statement.executeQuery("SELECT HOLDINGAMOUNT FROM HOLDINGS WHERE ACCOUNTID = " + accountIDNumber + " AND STOCKSYMBOL = '" + stockSymbol + "' ");
 		if (resultSet.next()) {
 			amount = resultSet.getInt("HOLDINGAMOUNT");
 		} else {
@@ -495,6 +524,7 @@ public class DBUtil {
 		return amount;
 	}
 
+
 	/**
 	 * Get holding share of stock --> Successful
 	 */
@@ -502,7 +532,7 @@ public class DBUtil {
 		Connection connection = getConnection();
 		Statement statement = connection.createStatement();
 		double price = 0;
-		ResultSet resultSet = statement.executeQuery("SELECT COSTPRICE FROM HOLDINGS WHERE ACCOUNTID = "+ accountIDNumber +" AND STOCKSYMBOL = '"+ stockSymbol +"' ");
+		ResultSet resultSet = statement.executeQuery("SELECT COSTPRICE FROM HOLDINGS WHERE ACCOUNTID = " + accountIDNumber + " AND STOCKSYMBOL = '" + stockSymbol + "' ");
 		if (resultSet.next()) {
 			price = resultSet.getDouble("COSTPRICE");
 		} else {
@@ -519,7 +549,7 @@ public class DBUtil {
 		Connection connection = getConnection();
 		Statement statement = connection.createStatement();
 
-		statement.execute("INSERT INTO HOLDINGS (ACCOUNTID, STOCKSYMBOL, STOCKNAME, HOLDINGAMOUNT, COSTPRICE) VALUES ("+accountIDNumber+",'"+stockSymbol+"','"+stockName+"',"+holdingAmount+","+costPrice+")");
+		statement.execute("INSERT INTO HOLDINGS (ACCOUNTID, STOCKSYMBOL, STOCKNAME, HOLDINGAMOUNT, COSTPRICE) VALUES (" + accountIDNumber + ",'" + stockSymbol + "','" + stockName + "'," + holdingAmount + "," + costPrice + ")");
 	}
 
 	/**
@@ -530,21 +560,21 @@ public class DBUtil {
 		Connection connection = getConnection();
 		Statement statement = connection.createStatement();
 
-		statement.execute("UPDATE HOLDINGS SET HOLDINGAMOUNT = "+ newAmount +" WHERE ACCOUNTID = "+ accountIDNumber +" AND STOCKSYMBOL = '"+ stockSymbol +"' ");
 		if (newAmount == 0) {
-			statement.execute("DELETE FROM HOLDINGS WHERE ACCOUNTID = "+ accountIDNumber +" AND STOCKSYMBOL = '"+ stockSymbol +"' ");
+			statement.execute("DELETE FROM HOLDINGS WHERE ACCOUNTID = " + accountIDNumber + " AND STOCKSYMBOL = '" + stockSymbol + "' ");
+		} else {
+			statement.execute("UPDATE HOLDINGS SET HOLDINGAMOUNT = " + newAmount + " WHERE ACCOUNTID = " + accountIDNumber + " AND STOCKSYMBOL = '" + stockSymbol + "' ");
 		}
 	}
 
 	/**
 	 * Update Cost Price
-	 * Second --> update
 	 */
 	public static void updateHoldingPrice(long accountIDNumber, String stockSymbol, double newPrice) throws SQLException {
 		Connection connection = getConnection();
 		Statement statement = connection.createStatement();
 
-		statement.executeUpdate("UPDATE HOLDINGS SET COSTPRICE = "+ newPrice +" WHERE ACCOUNTID = "+ accountIDNumber +" AND STOCKSYMBOL = '"+ stockSymbol +"' ");
+		statement.executeUpdate("UPDATE HOLDINGS SET COSTPRICE = " + newPrice + " WHERE ACCOUNTID = " + accountIDNumber + " AND STOCKSYMBOL = '" + stockSymbol + "' ");
 	}
 
 	public static boolean checkOpenMarket(Timestamp date) {
@@ -560,20 +590,20 @@ public class DBUtil {
 
 	/**
 	 * Buy or sell stocks
+	 *
 	 * @param tradeAccountID
-	 * @param tradeType --> buy or sell
-	 * @param tradeAmount --> must be positive
-	 * @param tradePrice --> live market price
-	 * @param stockSymbol
-	 * Still need to refactor --> partially finish
-	 * Still need to test --> partially finish --> do not include all test cases
+	 * @param tradeType      --> buy or sell
+	 * @param tradeAmount    --> must be positive
+	 * @param tradePrice     --> live market price
+	 * @param stockSymbol    Still need to refactor --> partially finish
+	 *                       Still need to test --> partially finish --> do not include all test cases
 	 */
 	public static String tradeStock(String tradeAccountID, String tradeType, int tradeAmount, double tradePrice, String stockSymbol, String stockName, Timestamp date) {
 		String message = null;
 		try {
 			Long accountIDNumber = Long.parseLong(tradeAccountID);
 
-			if (accountIDNumber <= 0){
+			if (accountIDNumber <= 0) {
 				message = "Originating account is invalid";
 			} else if (tradeAmount <= 0) {
 				message = "Trade amount is invalid";
@@ -590,7 +620,7 @@ public class DBUtil {
 			double currentBalance = tradeAccount.getBalance();
 
 			// buy
-			if(tradeType.equals("buy")) {
+			if (tradeType.equals("buy")) {
 				if (currentBalance < volume) {
 					return "Balance are not sufficient. Failed to buy stock";
 				}
@@ -607,13 +637,15 @@ public class DBUtil {
 				} else {
 					int newHolding = currentHolding + tradeAmount;
 					double previousPrice = getStockPrice(tradeAccount.getAccountId(), stockSymbol);
-					double newPrice = (currentHolding*previousPrice + tradeAmount*tradePrice)/newHolding;
+					double newPrice = (currentHolding * previousPrice + tradeAmount * tradePrice) / newHolding;
 					updateHoldingAmount(tradeAccount.getAccountId(), stockSymbol, newHolding);
 					updateHoldingPrice(tradeAccount.getAccountId(), stockSymbol, newPrice);
 				}
 
 				// update balance ---> Successful!
 				updateBalance(remainBalance, tradeAccount.getAccountId());
+
+				storeStockData(stockSymbol);
 			} else if (tradeType.equals("sell")) {
 				int currentHolding = getStockShare(tradeAccount.getAccountId(), stockSymbol);
 				if (currentHolding < 0) {
@@ -645,6 +677,7 @@ public class DBUtil {
 
 	/**
 	 * Get all trade information for the specified accounts
+	 *
 	 * @param accounts
 	 * @param startDate
 	 * @param endDate
@@ -663,29 +696,29 @@ public class DBUtil {
 
 		StringBuffer acctIds = new StringBuffer();
 		acctIds.append("ACCOUNTID = " + accounts[0].getAccountId());
-		for (int i=1; i<accounts.length; i++){
-			acctIds.append(" OR ACCOUNTID = "+accounts[i].getAccountId());
+		for (int i = 1; i < accounts.length; i++) {
+			acctIds.append(" OR ACCOUNTID = " + accounts[i].getAccountId());
 		}
 
 		String dateString = null;
 
-		if (startDate != null && startDate.length()>0 && endDate != null && endDate.length()>0){
+		if (startDate != null && startDate.length() > 0 && endDate != null && endDate.length() > 0) {
 			dateString = "DATE BETWEEN '" + startDate + " 00:00:00' AND '" + endDate + " 23:59:59'";
-		} else if (startDate != null && startDate.length()>0){
-			dateString = "DATE > '" + startDate +" 00:00:00'";
-		} else if (endDate != null && endDate.length()>0){
+		} else if (startDate != null && startDate.length() > 0) {
+			dateString = "DATE > '" + startDate + " 00:00:00'";
+		} else if (endDate != null && endDate.length() > 0) {
 			dateString = "DATE < '" + endDate + " 23:59:59'";
 		}
 
-		String query = "SELECT * FROM TRADE WHERE (" + acctIds.toString() + ") " + ((dateString==null)?"": "AND (" + dateString + ") ") + "ORDER BY DATE DESC" ;
+		String query = "SELECT * FROM TRADE WHERE (" + acctIds.toString() + ") " + ((dateString == null) ? "" : "AND (" + dateString + ") ") + "ORDER BY DATE DESC";
 		ResultSet resultSet = null;
 		try {
 			resultSet = statement.executeQuery(query);
-		} catch (SQLException e){
+		} catch (SQLException e) {
 			throw e;
 		}
 		ArrayList<Trade> trades = new ArrayList<>();
-		while (resultSet.next()){
+		while (resultSet.next()) {
 			int tradeId = resultSet.getInt("TRADE_ID");
 			long actId = resultSet.getLong("ACCOUNTID");
 			Timestamp date = resultSet.getTimestamp("DATE");
@@ -703,6 +736,7 @@ public class DBUtil {
 
 	/**
 	 * Get all trade information for the specified accounts
+	 *
 	 * @param accounts
 	 */
 	public static Holding[] getHolding(Account[] accounts) throws SQLException {
@@ -715,25 +749,25 @@ public class DBUtil {
 
 		StringBuffer acctIds = new StringBuffer();
 		acctIds.append("ACCOUNTID = " + accounts[0].getAccountId());
-		for (int i=1; i<accounts.length; i++){
-			acctIds.append(" OR ACCOUNTID = "+accounts[i].getAccountId());
+		for (int i = 1; i < accounts.length; i++) {
+			acctIds.append(" OR ACCOUNTID = " + accounts[i].getAccountId());
 		}
 
 		String query = "SELECT * FROM HOLDINGS WHERE (" + acctIds.toString() + ") AND HOLDINGAMOUNT != 0 ORDER BY ACCOUNTID";
 		ResultSet resultSet = null;
 		try {
 			resultSet = statement.executeQuery(query);
-		} catch (SQLException e){
+		} catch (SQLException e) {
 			throw e;
 		}
 		ArrayList<Holding> holdings = new ArrayList<>();
-		while (resultSet.next()){
+		while (resultSet.next()) {
 			long actId = resultSet.getLong("ACCOUNTID");
 			String stockSymbol = resultSet.getString("STOCKSYMBOL");
 			String stockName = resultSet.getString("STOCKNAME");
 			int amount = resultSet.getInt("HOLDINGAMOUNT");
 			double price = resultSet.getDouble("COSTPRICE");
-			holdings.add(new Holding(actId, stockSymbol, stockName,amount, price));
+			holdings.add(new Holding(actId, stockSymbol, stockName, amount, price));
 		}
 
 		return holdings.toArray(new Holding[holdings.size()]);
@@ -742,6 +776,7 @@ public class DBUtil {
 
 	/**
 	 * Get transaction information for the specified accounts in the date range (non-inclusive of the dates)
+	 *
 	 * @param startDate
 	 * @param endDate
 	 * @param accounts
@@ -749,99 +784,96 @@ public class DBUtil {
 	 * @return
 	 */
 	public static Transaction[] getTransactions(String startDate, String endDate, Account[] accounts, int rowCount) throws SQLException {
-		
 		if (accounts == null || accounts.length == 0)
 			return null;
 
-			Connection connection = getConnection();
+		Connection connection = getConnection();
 
-			
-			Statement statement = connection.createStatement();
-			
-			if (rowCount > 0)
-				statement.setMaxRows(rowCount);
 
-			StringBuffer acctIds = new StringBuffer();
-			acctIds.append("ACCOUNTID = " + accounts[0].getAccountId());
-			for (int i=1; i<accounts.length; i++){
-				acctIds.append(" OR ACCOUNTID = "+accounts[i].getAccountId());	
-			}
-			
-			String dateString = null;
-			
-			if (startDate != null && startDate.length()>0 && endDate != null && endDate.length()>0){
-				dateString = "DATE BETWEEN '" + startDate + " 00:00:00' AND '" + endDate + " 23:59:59'";
-			} else if (startDate != null && startDate.length()>0){
-				dateString = "DATE > '" + startDate +" 00:00:00'";
-			} else if (endDate != null && endDate.length()>0){
-				dateString = "DATE < '" + endDate + " 23:59:59'";
-			}
-			
-			String query = "SELECT * FROM TRANSACTIONS WHERE (" + acctIds.toString() + ") " + ((dateString==null)?"": "AND (" + dateString + ") ") + "ORDER BY DATE DESC" ;
-			ResultSet resultSet = null;
-			
-			try {
-				resultSet = statement.executeQuery(query);
-			} catch (SQLException e){
-				int errorCode = e.getErrorCode();
-				if (errorCode == 30000)
-					throw new SQLException("Date-time query must be in the format of yyyy-mm-dd HH:mm:ss", e);
-				
-				throw e;
-			}
-			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-			while (resultSet.next()){
-				int transId = resultSet.getInt("TRANSACTION_ID");
-				long actId = resultSet.getLong("ACCOUNTID");
-				Timestamp date = resultSet.getTimestamp("DATE");
-				String desc = resultSet.getString("TYPE");
-				double amount = resultSet.getDouble("AMOUNT");
-				transactions.add(new Transaction(transId, actId, date, desc, amount));
-			}
-			
-			return transactions.toArray(new Transaction[transactions.size()]); 
+		Statement statement = connection.createStatement();
+
+		if (rowCount > 0)
+			statement.setMaxRows(rowCount);
+
+		StringBuffer acctIds = new StringBuffer();
+		acctIds.append("ACCOUNTID = " + accounts[0].getAccountId());
+		for (int i = 1; i < accounts.length; i++) {
+			acctIds.append(" OR ACCOUNTID = " + accounts[i].getAccountId());
+		}
+
+		String dateString = null;
+
+		if (startDate != null && startDate.length() > 0 && endDate != null && endDate.length() > 0) {
+			dateString = "DATE BETWEEN '" + startDate + " 00:00:00' AND '" + endDate + " 23:59:59'";
+		} else if (startDate != null && startDate.length() > 0) {
+			dateString = "DATE > '" + startDate + " 00:00:00'";
+		} else if (endDate != null && endDate.length() > 0) {
+			dateString = "DATE < '" + endDate + " 23:59:59'";
+		}
+
+		String query = "SELECT * FROM TRANSACTIONS WHERE (" + acctIds.toString() + ") " + ((dateString == null) ? "" : "AND (" + dateString + ") ") + "ORDER BY DATE DESC";
+		ResultSet resultSet = null;
+
+		try {
+			resultSet = statement.executeQuery(query);
+		} catch (SQLException e) {
+			int errorCode = e.getErrorCode();
+			if (errorCode == 30000)
+				throw new SQLException("Date-time query must be in the format of yyyy-mm-dd HH:mm:ss", e);
+
+			throw e;
+		}
+		ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+		while (resultSet.next()) {
+			int transId = resultSet.getInt("TRANSACTION_ID");
+			long actId = resultSet.getLong("ACCOUNTID");
+			Timestamp date = resultSet.getTimestamp("DATE");
+			String desc = resultSet.getString("TYPE");
+			double amount = resultSet.getDouble("AMOUNT");
+			transactions.add(new Transaction(transId, actId, date, desc, amount));
+		}
+
+		return transactions.toArray(new Transaction[transactions.size()]);
 	}
 
 	public static String[] getBankUsernames() {
-		
 		try {
 			Connection connection = getConnection();
 			Statement statement = connection.createStatement();
 			//at the moment this query limits transfers to
 			//transfers between two user accounts
-			ResultSet resultSet =statement.executeQuery("SELECT USER_ID FROM PEOPLE"); 
+			ResultSet resultSet = statement.executeQuery("SELECT USER_ID FROM PEOPLE");
 
 			ArrayList<String> users = new ArrayList<String>();
-			
-			while (resultSet.next()){
+
+			while (resultSet.next()) {
 				String name = resultSet.getString("USER_ID");
 				users.add(name);
 			}
-			
+
 			return users.toArray(new String[users.size()]);
-		} catch (SQLException e){
+		} catch (SQLException e) {
 			e.printStackTrace();
 			return new String[0];
 		}
 	}
-	
-	public static Account getAccount(long accountNo) throws SQLException {
 
+	public static Account getAccount(long accountNo) throws SQLException {
 		Connection connection = getConnection();
 		Statement statement = connection.createStatement();
-		ResultSet resultSet =statement.executeQuery("SELECT ACCOUNT_NAME, BALANCE FROM ACCOUNTS WHERE ACCOUNT_ID = "+ accountNo +" "); /* BAD - user input should always be sanitized */
+		ResultSet resultSet = statement.executeQuery("SELECT ACCOUNT_NAME, BALANCE FROM ACCOUNTS WHERE ACCOUNT_ID = " + accountNo + " "); /* BAD - user input should always be sanitized */
 
 		ArrayList<Account> accounts = new ArrayList<Account>(3);
-		while (resultSet.next()){
+		while (resultSet.next()) {
 			String name = resultSet.getString("ACCOUNT_NAME");
-			double balance = resultSet.getDouble("BALANCE"); 
+			double balance = resultSet.getDouble("BALANCE");
 			Account newAccount = new Account(accountNo, name, balance);
 			accounts.add(newAccount);
 		}
-		
-		if (accounts.size()==0)
+
+		if (accounts.size() == 0)
 			return null;
-		
+
 		return accounts.get(0);
 	}
 
@@ -849,22 +881,22 @@ public class DBUtil {
 		try {
 			Connection connection = getConnection();
 			Statement statement = connection.createStatement();
-			statement.execute("INSERT INTO ACCOUNTS (USERID,ACCOUNT_NAME,BALANCE) VALUES ('"+username+"','"+acctType+"', 1000000)");
+			statement.execute("INSERT INTO ACCOUNTS (USERID,ACCOUNT_NAME,BALANCE) VALUES ('" + username + "','" + acctType + "', 1000000)");
 			return null;
-		} catch (SQLException e){
+		} catch (SQLException e) {
 			return e.toString();
 		}
 	}
-	
+
 	public static String addSpecialUser(String username, String password, String firstname, String lastname) {
 		try {
 			Connection connection = getConnection();
 			Statement statement = connection.createStatement();
-			statement.execute("INSERT INTO SPECIAL_CUSTOMERS (USER_ID,PASSWORD,FIRST_NAME,LAST_NAME,ROLE) VALUES ('"+username+"','"+password+"', '"+firstname+"', '"+lastname+"','user')");
+			statement.execute("INSERT INTO SPECIAL_CUSTOMERS (USER_ID,PASSWORD,FIRST_NAME,LAST_NAME,ROLE) VALUES ('" + username + "','" + password + "', '" + firstname + "', '" + lastname + "','user')");
 			return null;
-		} catch (SQLException e){
+		} catch (SQLException e) {
 			return e.toString();
-			
+
 		}
 	}
 
@@ -872,50 +904,50 @@ public class DBUtil {
 		try {
 			Connection connection = getConnection();
 			Statement statement = connection.createStatement();
-			statement.execute("INSERT INTO PEOPLE (USER_ID,PASSWORD,FIRST_NAME,LAST_NAME,ROLE) VALUES ('"+username+"','"+password+"', '"+firstname+"', '"+lastname+"','"+role+"')");
+			statement.execute("INSERT INTO PEOPLE (USER_ID,PASSWORD,FIRST_NAME,LAST_NAME,ROLE) VALUES ('" + username + "','" + password + "', '" + firstname + "', '" + lastname + "','" + role + "')");
 			return null;
-		} catch (SQLException e){
+		} catch (SQLException e) {
 			return e.toString();
 		}
 	}
 
-	public static boolean isValidUsername(String username){
-		try{
+	public static boolean isValidUsername(String username) {
+		try {
 			Connection connection = getConnection();
 			Statement statement = connection.createStatement();
-			ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) FROM PEOPLE WHERE USER_ID = '"+username+"'");
-			if (resultSet.next()){
+			ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) FROM PEOPLE WHERE USER_ID = '" + username + "'");
+			if (resultSet.next()) {
 				if (resultSet.getInt(1) > 0)
 					return false;
 			}
-		} catch (SQLException e){
+		} catch (SQLException e) {
 		}
 		return true;
 	}
-	
+
 	public static String changePassword(String username, String password) {
 		try {
 			Connection connection = getConnection();
 			Statement statement = connection.createStatement();
-			statement.execute("UPDATE PEOPLE SET PASSWORD = '"+ password +"' WHERE USER_ID = '"+username+"'");
+			statement.execute("UPDATE PEOPLE SET PASSWORD = '" + password + "' WHERE USER_ID = '" + username + "'");
 			return null;
-		} catch (SQLException e){
+		} catch (SQLException e) {
 			return e.toString();
 		}
 	}
 
 	public static long storeFeedback(String name, String email, String subject, String comments) {
-		try{ 
+		try {
 			Connection connection = getConnection();
 			Statement statement = connection.createStatement();
-			statement.execute("INSERT INTO FEEDBACK (NAME,EMAIL,SUBJECT,COMMENTS) VALUES ('"+name+"', '"+email+"', '"+subject+"', '"+comments+"')", Statement.RETURN_GENERATED_KEYS);
-			ResultSet rs= statement.getGeneratedKeys();
+			statement.execute("INSERT INTO FEEDBACK (NAME,EMAIL,SUBJECT,COMMENTS) VALUES ('" + name + "', '" + email + "', '" + subject + "', '" + comments + "')", Statement.RETURN_GENERATED_KEYS);
+			ResultSet rs = statement.getGeneratedKeys();
 			long id = -1;
-			if (rs.next()){
+			if (rs.next()) {
 				id = rs.getLong(1);
 			}
 			return id;
-		} catch (SQLException e){
+		} catch (SQLException e) {
 			Log4AltoroJ.getInstance().logError(e.getMessage());
 			return -1;
 		}
@@ -923,20 +955,110 @@ public class DBUtil {
 
 	/**
 	 * Get the start date of Stock
-	 * @param accountIDNumber
-	 * @param stockSymbol
-	 * @return
+	 *
+	 * @param accountIDNumber acount ID (long)
+	 * @param stockSymbol     Stock Symbol (String)
+	 * @return Start Date yyyy-MM-dd
 	 * @throws SQLException
 	 */
 	public static String getStartDate(long accountIDNumber, String stockSymbol) throws SQLException {
 		Connection connection = getConnection();
 		Statement statement = connection.createStatement();
 
-		ResultSet resultSet = statement.executeQuery("SELECT DATE FROM TRADE WHERE ACCOUNTID ="+ accountIDNumber +" AND STOCKSYMBOL = '"+ stockSymbol +"' ORDER BY DATE ASC");
+		ResultSet resultSet = statement.executeQuery("SELECT DATE FROM TRADE WHERE ACCOUNTID =" + accountIDNumber + " AND STOCKSYMBOL = '" + stockSymbol + "' ORDER BY DATE ASC");
 		String date = null;
 		if (resultSet.next()) {
 			date = new SimpleDateFormat("yyyy-MM-dd").format(resultSet.getTimestamp("DATE"));
 		}
 		return date;
+	}
+
+	public static void storeStockData(String stockSymbol) throws SQLException {
+		Connection connection = getConnection();
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery("SELECT DISTINCT STOCK_SYMBOL FROM STOCKDATA");
+		ArrayList<String> existedStockList = new ArrayList<>();
+		while (resultSet.next()) {
+			existedStockList.add(resultSet.getString("STOCK_SYMBOL"));
+		}
+
+		if (!existedStockList.contains(stockSymbol)) {
+			ArrayList<StockData> stockData = ConnectYahooFinance.getHistoryData(stockSymbol, null, null);
+			for (StockData stock : stockData) {
+				stock.getDate();
+				statement.execute("INSERT INTO STOCKDATA (STOCK_SYMBOL, DATE, S_OPEN, S_CLOSE, S_HIGH, S_LOW, S_ADJ_CLOSE, S_VOLUME) VALUES ('" + stock.getSymbol() + "', '" + stock.getDate() + "', " + stock.getOpen() + ", " + stock.getClose() + ", " + stock.getHigh() + ", " + stock.getLow() + ", " + stock.getAdj_close() + ", " + stock.getVolume() + ")");
+			}
+		}
+	}
+
+	public static String checkStockUpdate(String stockSymbol) throws SQLException {
+		Connection connection = getConnection();
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery("SELECT DATE FROM STOCKDATA WHERE STOCK_SYMBOL = '" + stockSymbol + "' ORDER BY DATE DESC");
+		if (resultSet.next()) {
+			String existedDate = resultSet.getString("DATE");
+			ArrayList<StockData> list = ConnectYahooFinance.getHistoryData(stockSymbol, existedDate, null);  // newest date
+			if (list.get(list.size() - 1).getDate() == existedDate) {
+				return null;
+			}
+		}
+		return "Need to Update the Database";
+	}
+
+	public static void updateStockData(String stockSymbol) throws SQLException {
+		Connection connection = getConnection();
+		Statement statement = connection.createStatement();
+		statement.execute("DELETE FROM STOCKDATA WHERE STOCK_SYMBOL = '" + stockSymbol + "'");
+		storeStockData(stockSymbol);
+	}
+
+	public static boolean checkUpdateHistDataSet(Timestamp date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		int hour = cal.get(Calendar.HOUR_OF_DAY);
+		int day = cal.get(Calendar.DAY_OF_WEEK);
+		boolean update = (hour > 18 && (day <= 5 && day >= 1)) || day > 5;
+		return update;
+	}
+
+	public static ArrayList<StockData> getStockDataFromSQL(String stockSymbol, String startDate, String endDate) throws SQLException {
+		Connection connection = getConnection();
+		Statement statement = connection.createStatement();
+
+//		Timestamp date = new Timestamp(new java.util.Date().getTime());
+
+//		if (checkUpdateHistDataSet(date)) {
+//			updateStockData(stockSymbol);
+//		} else {
+//			String message = checkStockUpdate(stockSymbol);
+//			if (message != null) {
+//				updateStockData(stockSymbol);
+//			}
+//		}
+
+		ArrayList<StockData> stockData = new ArrayList<>();
+		ResultSet resultSet;
+		if (startDate == null && endDate == null) {
+			resultSet = statement.executeQuery("SELECT * FROM STOCKDATA WHERE STOCK_SYMBOL = '" + stockSymbol + "' ORDER BY DATE ASC");
+		} else if (startDate != null && endDate == null) {
+			resultSet = statement.executeQuery("SELECT * FROM STOCKDATA WHERE STOCK_SYMBOL = '" + stockSymbol + "' AND DATE >= '" + startDate + "' ORDER BY DATE ASC");
+		} else if (startDate == null && endDate != null) {
+			resultSet = statement.executeQuery("SELECT * FROM STOCKDATA WHERE STOCK_SYMBOL = '" + stockSymbol + "' AND DATE <= '" + endDate + "' ORDER BY DATE ASC");
+		} else {
+			resultSet = statement.executeQuery("SELECT * FROM STOCKDATA WHERE STOCK_SYMBOL = '" + stockSymbol + "' AND DATE >= '" + startDate + "' AND DATE <= '" + endDate + "' ORDER BY DATE ASC");
+		}
+		while (resultSet.next()) {
+			StockData hisdata = new StockData();
+			hisdata.setSymbol(resultSet.getString("STOCK_SYMBOL"));
+			hisdata.setDate(resultSet.getString("DATE"));
+			hisdata.setOpen(resultSet.getDouble("S_OPEN"));
+			hisdata.setHigh(resultSet.getDouble("S_HIGH"));
+			hisdata.setLow(resultSet.getDouble("S_LOW"));
+			hisdata.setClose(resultSet.getDouble("S_CLOSE"));
+			hisdata.setAdj_close(resultSet.getDouble("S_ADJ_CLOSE"));
+			hisdata.setVolume(resultSet.getDouble("S_VOLUME"));
+			stockData.add(hisdata);
+		}
+		return stockData;
 	}
 }

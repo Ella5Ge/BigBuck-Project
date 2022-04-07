@@ -164,9 +164,9 @@ public class ConnectYahooFinance{
         }
     }
 
-    public static ArrayList<Double> getROR(String stockSymbol, String startDate) {
+    public static ArrayList<Double> getROR(String stockSymbol, String startDate) throws SQLException {
         ArrayList<Double> ROR = new ArrayList<Double>();
-        ArrayList<StockData> stock = getHistoryData(stockSymbol, startDate, null);
+        ArrayList<StockData> stock = DBUtil.getStockDataFromSQL(stockSymbol, startDate, null);
         int n = stock.size();
         for(int i=1; i<n; i++){
             double day1 = stock.get(i-1).getAdj_close();
@@ -222,7 +222,6 @@ public class ConnectYahooFinance{
         Holding[] holdings = DBUtil.getHolding(accounts);
         ArrayList<Double> weight = getWeight(holdings);
         System.out.println("weight: " + weight);
-        //double rf = getLiveObjects("%5ETNX").getDouble("regularMarketPrice") / 100;
         ArrayList<StockData> treasury_data = getHistoryData("%5ETNX","2022-04-05", null);
         double rf = treasury_data.get(treasury_data.size()-1).getAdj_close() / 100;
 
