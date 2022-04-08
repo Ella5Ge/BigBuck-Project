@@ -42,13 +42,13 @@ public class TradeServlet extends HttpServlet {
         int tradeAmount = Integer.parseInt(request.getParameter("tradeAmount"));
 
         Timestamp date = new Timestamp(new java.util.Date().getTime());
-        if (!DBUtil.checkOpenMarket(date)) {
-            message = "Fail to trade. The stock market is closed.";
-            RequestDispatcher dispatcher = request.getRequestDispatcher("stocks.jsp");
-            request.setAttribute("message", message);
-            dispatcher.forward(request, response);
-            return;
-        }
+//        if (!DBUtil.checkOpenMarket(date)) {
+//            message = "Fail to trade. The stock market is closed.";
+//            RequestDispatcher dispatcher = request.getRequestDispatcher("stocks.jsp");
+//            request.setAttribute("message", message);
+//            dispatcher.forward(request, response);
+//            return;
+//        }
 
         String stockName;
         double tradePrice;
