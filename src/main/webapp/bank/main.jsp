@@ -33,12 +33,12 @@ IBM AltoroJ
 					com.ibm.security.appscan.altoromutual.model.User user = (com.ibm.security.appscan.altoromutual.model.User)request.getSession().getAttribute("user");
 				%>
 		
-		<h1>Hello <%= user.getFirstName() + " " + user.getLastName() %>
-		  </h1>
-		
-		<p>
-		  Welcome to Altoro Mutual Online.
-		</p>
+		<h1>
+			Hello <%= user.getFirstName() + " " + user.getLastName() %>
+		</h1>
+		<h2>
+			Welcome to Altoro Mutual Online.
+		</h2>
 		
 		<form name="details" method="get" action="showAccount">
 		<table border="0">
@@ -55,12 +55,17 @@ IBM AltoroJ
 		      <input type="submit" id="btnGetAccount" value="   GO   ">
 		    </td>
 		  </tr>
-		  <tr>
-		    <td colspan="2"><span id="_ctl0__ctl0_Content_Main_promo"><table width=590 border=0><tr><td><h2>Congratulations! </h2></td></tr><tr><td>You have been pre-approved for an Altoro Gold Visa with a credit limit of $10000!</td></tr><tr><td>Click <a href='apply.jsp'>Here</a> to apply.</td></tr></table></span></td>
-		  </tr>
+			<tr>
+				<td colspan="2"><span id="_ctl0__ctl0_Content_Main_promo"><table width=590 border=0>
+					<tr><td>
+						<h2>Congratulations! </h2>
+					</td></tr>
+					<tr><td>You have been credited $1,000,000 in your cash account, for use in buying and selling stocks!</td></tr>
+				</table></span></td>
+			</tr>
+
 		</table>
 		</form>
-		
 		</div>
     </td>
 </div>

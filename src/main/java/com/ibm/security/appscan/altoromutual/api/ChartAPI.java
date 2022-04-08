@@ -3,17 +3,13 @@ package com.ibm.security.appscan.altoromutual.api;
 import com.ibm.security.appscan.altoromutual.model.StockData;
 import com.ibm.security.appscan.altoromutual.util.ConnectYahooFinance;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.renderer.xy.XYDotRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -24,7 +20,6 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.time.*;
 import org.jfree.data.xy.*;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -32,71 +27,76 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class ChartAPI extends ApplicationFrame {
 
-    private String subtitle;
-    private String x_label;
-    private String y_label;
-
-
-    public ChartAPI(String title, String stockSymbol, String subtitle, String x_label, String y_label) throws ParseException {
+    public ChartAPI(String title) {
         super(title);
-//        this.subtitle = subtitle;
-//        this.x_label = x_label;
-//        this.y_label = y_label;
-//        ChartPanel chartPanel = (ChartPanel) createDemoPanel(stockSymbol);
-//        chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
-//        setContentPane(chartPanel);
     }
 
-    public static ArrayList<ArrayList<Double>> Calculate_ROR(String StockSymbol){
-        ArrayList<Double> stockprice = new ArrayList<Double>();
-        ArrayList<Double> stockdate = new ArrayList<Double>();
-        ArrayList<Double> stockror = new ArrayList<Double>();
-        ArrayList<ArrayList<Double>> stockrorwithdate = new ArrayList<ArrayList<Double>>();
-        ArrayList<StockData> stockdata = ConnectYahooFinance.getHistoryData(StockSymbol,null,null);
-        System.out.println(stockdata.size());
-        for(StockData item: stockdata) {
+    /**
+     * calculate ror
+     * @param stockSymbol stock symbol
+     * @return an arraylist of date + an arraylist of rate of return
+     */
+    public static ArrayList<ArrayList<Double>> Calculate_ROR(String stockSymbol){
+        ArrayList<Double> stockPrice = new ArrayList<>();
+        ArrayList<Double> stockDate = new ArrayList<>();
+        ArrayList<Double> stockROR = new ArrayList<>();
+        ArrayList<ArrayList<Double>> stockRorWithDate = new ArrayList<>();
+        ArrayList<StockData> stockData = ConnectYahooFinance.getHistoryData(stockSymbol,null,null);
+        assert stockData != null;
+        for(StockData item: stockData) {
             double adj_close_price = item.getAdj_close();
-            stockprice.add(adj_close_price);
+            stockPrice.add(adj_close_price);
         }
-        for(int i = 0; i < stockprice.size()-1;i++){
-            double ror = (stockprice.get(i+1)-stockprice.get(i))/stockprice.get(i);
-            stockror.add(ror);
+        for(int i = 0; i < stockPrice.size()-1;i++){
+            double ror = (stockPrice.get(i+1)-stockPrice.get(i))/stockPrice.get(i);
+            stockROR.add(ror);
         }
-        for(int i = 1; i < stockdata.size();i++){
-            double date = ConnectYahooFinance.StringtoTimestamp(stockdata.get(i).getDate()) * 1000;
-            stockdate.add(date);
-            //System.out.println("date" + i + "=" + date);
-        }
-        stockrorwithdate.add(stockdate);
-        stockrorwithdate.add(stockror);
-        //System.out.println("共有 " + stockror.size() + " 个数据");
-        return stockrorwithdate;
+//        for(int i = 1; i < stockData.size();i++){
+//            double date = ConnectYahooFinance.StringtoTimestamp(stockData.get(i).getDate()) * 1000;
+//            stockDate.add(date);
+//        }
+        IntStream.range(1, stockData.size()).mapToDouble(i -> ConnectYahooFinance.StringtoTimestamp(stockData.get(i).getDate()) * 1000).forEach(stockDate::add);
+        stockRorWithDate.add(stockDate);
+        stockRorWithDate.add(stockROR);
+        return stockRorWithDate;
     }
 
 
-
+    /**
+     * Convert date String to Regular Time Period for XYDataSet
+     * @param dateString the String format of date
+     * @return regular time period format
+     * @throws ParseException for parse
+     */
     public static RegularTimePeriod convertDate2RTP(String dateString) throws ParseException {
         SimpleDateFormat sdf2 = new SimpleDateFormat("yy-MM-dd");
         Date myDate = sdf2.parse(dateString);
         return new Day(myDate);
     }
 
-    /*public static Number convertTimestamp2RPT(Double timestamp) throws ParseException{
-        SimpleDateFormat sdf3 = new SimpleDateFormat("yy-MM-dd");
-        Date myDate = sdf3.parse(timestamp.toString());
-        return new Number(myDate);
-    }*/
+
+    /**
+     * creat DateAxis as DomainAxis
+     * @return DateAxis for time series scatter
+     */
+    public static DateAxis setDateAxis(){
+        DateAxis dateAxis = new DateAxis();
+        dateAxis.setDateFormatOverride(new SimpleDateFormat("dd-MM-yyyy"));
+        return dateAxis;
+    }
 
 
-
-    // create dataset:
-    // first chart, parameter: stockSymbol
-    // Dataset: stock adj closed priced; Date
-    // 这里这里已完成
-    public static TimeSeries loadPriceData(String stockSymbol) throws ParseException {
+    /**
+     * load the Time Series dataset for one stock
+     * @param stockSymbol stock symbol
+     * @return XY dataset
+     * @throws ParseException for parse in convertDate2RTP
+     */
+    public static XYDataset loadStockPriceData(String stockSymbol) throws ParseException {
         ArrayList<StockData> list = ConnectYahooFinance.getHistoryData(stockSymbol, null, null);
         String Y_name = stockSymbol + " Adjusted Closed Price";
         TimeSeries s = new TimeSeries(Y_name);
@@ -104,120 +104,90 @@ public class ChartAPI extends ApplicationFrame {
         for(StockData item: list) {
             s.addOrUpdate(convertDate2RTP(item.getDate()), item.getAdj_close());
         }
-        return s;
-    }
-
-    public static TimeSeriesCollection loadStockPriceData(String stockSymbol) throws ParseException {
-        TimeSeries s = loadPriceData(stockSymbol);
         return new TimeSeriesCollection(s);
     }
 
-    public static XYDataset creatPriceDataset(String stockSymbol, String indexSymbol) throws ParseException {
-        TimeSeriesCollection dataset = new TimeSeriesCollection();
-        if(indexSymbol != null){
-            TimeSeries series1 = new TimeSeries("Stock Price");
-            TimeSeries series2 = new TimeSeries("Index Price");
-            series1 = loadPriceData(stockSymbol);
-            series2 = loadPriceData(indexSymbol);
-            dataset.addSeries(series1);
-            dataset.addSeries(series2);
-            return dataset;
-        }
-        else{
-            TimeSeriesCollection seriesColletion;
-            seriesColletion = loadStockPriceData(stockSymbol);
-            return seriesColletion;
-        }
-    }
 
-
-    // Second chart, parameter: stockSymbol
-    // Dataset: stock return, Date  p
-    // 此处注意! 从网上down的数据有没有直接的rate of return
-    // 这里这里！！没完成呢
-    public static XYSeries loadReturnData(String stockSymbol) throws ParseException {
+    /**
+     * Create XY Series for stock return
+     * @param stockSymbol stock symbol
+     * @return XY dataset
+     */
+    public static XYSeries loadStockReturnData(String stockSymbol) throws ParseException {
         ArrayList<ArrayList<Double>> ror_list = Calculate_ROR(stockSymbol);
         int size = ror_list.get(1).size();
         ArrayList<Double> ror_date = ror_list.get(0);
-        //System.out.println("时间共" + ror_date.size());
         ArrayList<Double> ror = ror_list.get(1);
-        //System.out.println((double) ror_date.get(size-1));
         String Y_name = stockSymbol + " Return";
         XYSeries s = new XYSeries(Y_name);
-        assert ror_list != null;
         for(int i = 0; i < size;i++){
-            //System.out.println(ror_date.get(i));
-            s.addOrUpdate(ror_date.get(i),ror.get(i));
+            s.add(ror_date.get(i),ror.get(i));
         }
 
         return s;
     }
 
-    public static XYSeriesCollection loadStockReturnData(String stockSymbol) throws ParseException {
-        XYSeries s = loadReturnData(stockSymbol);
-        return new XYSeriesCollection(s);
-    }
 
-    public static XYDataset createReturnDataset(String stockSymbol, String indexSymbol) throws ParseException {
+    /**
+     * Create XY dateset for stock return and index return
+     * @param stockSymbol stock symbol
+     * @param indexSymbol index symbol
+     * @return XY dataset
+     * @throws ParseException for parse
+     */
+    public static XYDataset createStockIndexReturnDataset(String stockSymbol, String indexSymbol) throws ParseException {
         XYSeriesCollection dataset = new XYSeriesCollection();
-        if(indexSymbol != null){
-            XYSeries series1 = new XYSeries("Stock Return");
-            XYSeries series2 = new XYSeries("Index Return");
-            series1 = loadReturnData(stockSymbol);
-            series2 = loadReturnData(indexSymbol);
-            dataset.addSeries(series1);
-            dataset.addSeries(series2);
-            return dataset;
-        }
-        else{
-            XYSeriesCollection seriesColletion;
-            seriesColletion = loadStockReturnData(stockSymbol);
-            return seriesColletion;
-        }
+        dataset.addSeries(loadStockReturnData(stockSymbol));
+        dataset.addSeries(loadStockReturnData(indexSymbol));
+        return dataset;
     }
 
-    public static XYDataset loadReturnDataset_yesterday(String stockSymbol){
-        ArrayList<ArrayList<Double>> ror_list = Calculate_ROR(stockSymbol);
+
+    /**
+     * Create XY dataset for stock's today return and yesterday return
+     * @param stockSymbol stock symbol
+     * @return XY dataset: x is yesterday's return, y is today's return
+     */
+    public static XYDataset loadReturnVSYesterday(String stockSymbol){
+        ArrayList<ArrayList<Double>> ror_list = Calculate_ROR(stockSymbol);   // <Double> date + <Double> ror
         ArrayList<Double> ror = ror_list.get(1);
         String Y_name = stockSymbol + " Return";
         XYSeries s = new XYSeries(Y_name);
-        assert ror_list != null;
         for(int i = 1; i < ror.size();i++){
-            //System.out.println(ror_date.get(i));
-            s.addOrUpdate(ror.get(i-1),ror.get(i));
+            s.add(ror.get(i-1),ror.get(i));
         }
         return new XYSeriesCollection(s);
     }
 
 
-
+    /**
+     * Create Frequency
+     * @param stockSymbol stock symbol
+     * @return Frequency, key is bar, value is number of ror in bar
+     */
     private static HashMap<Double, Integer> getFrequency(String stockSymbol) {
         ArrayList<ArrayList<Double>> ror_list = Calculate_ROR(stockSymbol);
-        System.out.println(ror_list);
         ArrayList<Double> ror = ror_list.get(1);
-        double max = 0;
-        double min = 0;
         ror.sort(Comparator.naturalOrder());
-        min = Math.floor(ror.get(0) * 100);
-        max = Math.round(ror.get(ror.size()-1) * 100);
-        int count = (int) (max-min) * 2;
-        HashMap<Double, Integer> frequencymap = new HashMap<Double,Integer>();
+
+        double min = Math.round(ror.get(0) * 100);
+        double max = Math.floor(ror.get(ror.size()-1) * 100);
+        int count = (int) (max-min) * 2 / 5;
+        HashMap<Double, Integer> frequencymap = new HashMap<>();
         frequencymap.put(min, 0);
-        for(double i = min; i <= max; i += 0.5){
+        for(double i = min; i <= max; i += 2.5){
             frequencymap.put(i , 0);
         }
-        for(Double bin:frequencymap.keySet()){
-            for (int i = 0; i < ror.size(); i++) {
-                int floor = (int) Math.floor((ror.get(i)*100 - min) / (max - min) * count);
-                Double f = floor * 0.5 + min;
-                if (frequencymap.containsKey(f)) {
-                    //System.out.println("f:" +f.toString());
-                    int con = frequencymap.get(f);
-                    frequencymap.put(f, con +1);
-                }
+
+        for (Double aROR: ror) {
+            int floor = (int) Math.floor((aROR * 100 - min) / (max - min) * count);
+            Double f = floor * 2.5 + min;
+            if (frequencymap.containsKey(f)) {
+                int con = frequencymap.get(f);
+                frequencymap.put(f, con + 1);
             }
         }
-        System.out.println("Frequency Hashmap" + frequencymap);
+
         return frequencymap;
     }
 
@@ -226,15 +196,17 @@ public class ChartAPI extends ApplicationFrame {
         TreeMap<Double, Integer> frequencymap4chart = new TreeMap<>();
         DefaultCategoryDataset defaultCategoryDataset = new DefaultCategoryDataset();
         //sort frequency map
-        ArrayList<Double> list = new ArrayList<Double>(frequencymap.keySet());
+        ArrayList<Double> list = new ArrayList<>(frequencymap.keySet());
         Collections.sort(list);
-        for(int i = 0; i < list.size();i++){
-            frequencymap4chart.put(list.get(i),null);
+        for (Double aDouble : list) {
+            frequencymap4chart.put(aDouble, null);
         }
+
         for(Double item:frequencymap.keySet()){
             int con = frequencymap.get(item);
             frequencymap4chart.replace(item,con);
         }
+
         for(Double bin: frequencymap4chart.keySet()){
             defaultCategoryDataset.addValue(frequencymap4chart.get(bin),"Class",bin.toString());
         }
@@ -242,26 +214,13 @@ public class ChartAPI extends ApplicationFrame {
     }
 
 
-    //creat DateAxis as DomainAxis
-    public static DateAxis setDateAxis(){
-        DateAxis dateAxis = new DateAxis();
-        dateAxis.setDateFormatOverride(new SimpleDateFormat("dd-MM-yyyy"));
-        return dateAxis;
-    }
-
-    public static ArrayList<Double> Calculate_Cum_Return(String stockSymbol){
-        ArrayList<ArrayList<Double>> list1 = Calculate_ROR(stockSymbol);
-        ArrayList<Double> ror = list1.get(1);
-        ArrayList<Double> cum_return_list = new ArrayList<>();
-        double cum_return = 1;
-        for(Double item:ror){
-            cum_return *= (item + 1);
-            cum_return_list.add(cum_return);
-        }
-        return cum_return_list;
-    }
-
-    public static TimeSeries loadCumReturnData(String stockSymbol) throws ParseException{
+    /**
+     * load cumulative return for stock
+     * @param stockSymbol stock symbol
+     * @return XY dataset: x is date, y is cumulative return
+     * @throws ParseException for parse
+     */
+    public static TimeSeries loadStockCumReturn(String stockSymbol) throws ParseException{
         ArrayList<ArrayList<Double>> list1 = Calculate_ROR(stockSymbol);
         ArrayList<Double> date = list1.get(0);
 
@@ -278,40 +237,40 @@ public class ChartAPI extends ApplicationFrame {
             Timestamp dateTmp = new Timestamp(date.get(i).longValue());
             s.addOrUpdate(convertDate2RTP(dateTmp.toString()),cum_return_list.get(i));
         }
-        System.out.println(s);
         return s;
     }
 
 
-
-    public static XYDataset createCumReturnDataset(String stockSymbol, String indexSymbol) throws ParseException {
+    /**
+     * Create cumulative return for stock and index for chart 5
+     * @param stockSymbol stock symbol
+     * @param indexSymbol index symbol
+     * @return a time series of stock return and a time series of index return
+     * @throws ParseException for parse (date)
+     */
+    public static XYDataset createStockIndexCumReturn(String stockSymbol, String indexSymbol) throws ParseException {
         TimeSeriesCollection dataset = new TimeSeriesCollection();
-        if(indexSymbol != null){
-            TimeSeries series1 = new TimeSeries("Stock Cumulative Return");
-            TimeSeries series2 = new TimeSeries("Index Cumulative Return");
-            series1 = loadCumReturnData(stockSymbol);
-            series2 = loadCumReturnData(indexSymbol);
-            dataset.addSeries(series1);
-            dataset.addSeries(series2);
-            return dataset;
-        }
-        else{
-            TimeSeriesCollection seriesColletion;
-            seriesColletion = loadStockPriceData(stockSymbol);
-            return seriesColletion;
-        }
+        dataset.addSeries(loadStockCumReturn(stockSymbol));
+        dataset.addSeries(loadStockCumReturn(indexSymbol));
+        return dataset;
     }
-    public static ArrayList<Double> Calculate_OLS(ArrayList<Double> stock_ror, ArrayList<Double> index_ror){
+
+
+    /**
+     * Calculate OLS for regression line
+     * @param stock_ror stock's rate of return
+     * @param index_ror index's rate of return
+     * @return estimations of regression
+     */
+    public static ArrayList<Double> calculateOLS(ArrayList<Double> stock_ror, ArrayList<Double> index_ror){
         double size = stock_ror.size();
         double sigma_xi_yi = 0;
 
         double sigma_xi2 = 0;
-        double sigma_xi_2 = 0;
         for(int i = 0; i < size; i++){
             double m = stock_ror.get(i) * index_ror.get(i);
             sigma_xi_yi += m;
         }
-        double sigma_xi_sigma_yi = 0;
         double sigma_xi = 0;
         double sigma_yi = 0;
         for(int i =0; i < size;i++){
@@ -320,7 +279,7 @@ public class ChartAPI extends ApplicationFrame {
             double p = index_ror.get(i);
             sigma_xi += p;
         }
-        sigma_xi_sigma_yi = sigma_xi * sigma_yi;
+        double sigma_xi_sigma_yi = sigma_xi * sigma_yi;
         for(int i = 0; i < size; i ++){
             sigma_xi2 += Math.pow(index_ror.get(i),2);
         }
@@ -328,18 +287,25 @@ public class ChartAPI extends ApplicationFrame {
         double stock_ror_bar = sigma_yi / size;
         double index_ror_bar = sigma_xi / size;
         double alpha_hat = stock_ror_bar - beta_hat * index_ror_bar;
-        ArrayList<Double> ols_estimate = new ArrayList<Double>();
+        ArrayList<Double> ols_estimate = new ArrayList<>();
         ols_estimate.add(beta_hat);
         ols_estimate.add(alpha_hat);
         return ols_estimate;
     }
 
+
+    /**
+     * create OLS data for regression chart
+     * @param stockSymbol stock symbol
+     * @return XY dataset
+     * @throws ParseException for parse
+     */
     public static XYDataset createOLSDataset(String stockSymbol, String indexSymbol) throws ParseException {
         ArrayList<ArrayList<Double>> list1 = Calculate_ROR(stockSymbol);
         ArrayList<Double> stock_ror = list1.get(1);
-        ArrayList<ArrayList<Double>> list2 = Calculate_ROR(stockSymbol);
+        ArrayList<ArrayList<Double>> list2 = Calculate_ROR(indexSymbol);
         ArrayList<Double> index_ror = list2.get(1);
-        ArrayList<Double> ols_est = Calculate_OLS(stock_ror,index_ror);
+        ArrayList<Double> ols_est = calculateOLS(stock_ror,index_ror);
         int size = stock_ror.size();
         double beta_hat = ols_est.get(0);
         double alpha_hat = ols_est.get(1);
@@ -354,47 +320,65 @@ public class ChartAPI extends ApplicationFrame {
         ArrayList<Double> pointn = new ArrayList<>();
         pointn.add(xn);
         pointn.add(yn_hat);
-        ArrayList<ArrayList<Double>> point = new ArrayList<ArrayList<Double>>();
+        ArrayList<ArrayList<Double>> point = new ArrayList<>();
         point.add(point1);
         point.add(pointn);
         String Y_name = stockSymbol + " OLS";
         XYSeries s = new XYSeries(Y_name);
-        s.addOrUpdate(x0,y0_hat);
-        s.addOrUpdate(xn,yn_hat);
-//        XYSeries stock_return_series = loadReturnData(stockSymbol);
-//        XYSeries index_return_series = loadReturnData(indexSymbol);
-//
-//        XYSeriesCollection OLSDataset = new XYSeriesCollection();
-//        OLSDataset.addSeries(s);
-//        OLSDataset.addSeries(stock_return_series);
-//        OLSDataset.addSeries(index_return_series);
+        s.add(x0,y0_hat);
+        s.add(xn,yn_hat);
         return new XYSeriesCollection(s);
     }
 
-    public static XYDataset createReturnDataset_stock_index(String stockSymbol, String indexSymbol){
+
+    /**
+     * This Dataset: x is index return, y is stock return
+     * @param stockSymbol stock symbol
+     * @return x is index's rate of return, y is stock's rate of return
+     */
+    public static XYDataset createStockVsIndexReturn(String stockSymbol, String indexSymbol){
         ArrayList<ArrayList<Double>> list1 = Calculate_ROR(stockSymbol);
         ArrayList<Double> stock_ror = list1.get(1);
-        ArrayList<ArrayList<Double>> list2 = Calculate_ROR(stockSymbol);
+        ArrayList<ArrayList<Double>> list2 = Calculate_ROR(indexSymbol);
         ArrayList<Double> index_ror = list2.get(1);
         String Y_name = stockSymbol + " Return";
         XYSeries s = new XYSeries(Y_name);
-        for(int i = 1; i < stock_ror.size();i++){
-            //System.out.println(ror_date.get(i));
-            s.addOrUpdate(stock_ror.get(i-1),stock_ror.get(i));
+        for(int i = 0; i < stock_ror.size();i++){
+            s.add(index_ror.get(i),stock_ror.get(i));
         }
         return new XYSeriesCollection(s);
     }
 
 
-    public static JFreeChart createOLSLineChart(String stockSymbol, String indexSymbol) throws ParseException, IOException {
+    /**
+     * Create plot format
+     * @param plot chart plot
+     * @param inset x-axis
+     */
+    public static void createPlot(XYPlot plot, double inset) {
+        plot.setBackgroundPaint(Color.LIGHT_GRAY);
+        plot.setDomainGridlinePaint(Color.WHITE);
+        plot.setRangeGridlinePaint(Color.WHITE);
+        plot.setAxisOffset(new RectangleInsets(inset, inset, inset, inset));
+        plot.setDomainCrosshairVisible(true);
+        plot.setRangeCrosshairVisible(true);
+
+        XYItemRenderer r = plot.getRenderer();
+        if (r instanceof XYLineAndShapeRenderer renderer) {
+            renderer.setDrawSeriesLineAsPath(true);
+        }
+    }
+
+
+    public static JFreeChart createOLSLineChart(String stockSymbol, String indexSymbol) throws ParseException {
         String subtitle = "Scatter graph of " + stockSymbol + " return vs. market return, with regression line";
         XYPlot plot = new XYPlot();
         XYLineAndShapeRenderer lineRenderer = new XYLineAndShapeRenderer(true, false);
-        plot.setDataset(0, createOLSDataset(stockSymbol,indexSymbol));
+        plot.setDataset(0, createOLSDataset(stockSymbol, indexSymbol));
         plot.setRenderer(0,lineRenderer);
 
         XYDotRenderer dotRenderer = new XYDotRenderer();
-        plot.setDataset(1,createReturnDataset_stock_index(stockSymbol,indexSymbol));
+        plot.setDataset(1,createStockVsIndexReturn(stockSymbol, indexSymbol));
         plot.setRenderer(1,dotRenderer);
         dotRenderer.setDotWidth(5);
         dotRenderer.setDotHeight(5);
@@ -404,44 +388,41 @@ public class ChartAPI extends ApplicationFrame {
         plot.setRangeAxis(new NumberAxis(stockSymbol + " return"));
 
         JFreeChart chart = new JFreeChart(plot);
-        chart.setTitle("Scatter Chart with OLS Line");
-
-//        ChartPanel panel = new ChartPanel(chart);
-//        setContentPane(panel);
-        ChartUtils.saveChartAsPNG(new File("chart7.png"), chart, 800,600);
+        chart.setTitle(subtitle);
         return chart;
     }
 
 
-    //时间序列折线图！！！！！
-    public static JFreeChart createLineChart(XYDataset dataset, String stockSymbol, String chartname,String subtitle, String x_label, String y_label) throws IOException {
+    /**
+     * Create Line Chart
+     * @param dataset XYDataset
+     * @param subtitle title of chart shown on the png
+     * @param y_label depends on different stock symbol
+     * @return a line chart
+     * @throws IOException for saveChartASPNG
+     */
+    public static JFreeChart createLineChart(XYDataset dataset, String subtitle, String x_label, String y_label) throws IOException {
         JFreeChart chart = ChartFactory.createTimeSeriesChart(subtitle, x_label, y_label, dataset);
 
         chart.setBackgroundPaint(Color.WHITE);
 
         XYPlot plot = (XYPlot) chart.getPlot();
-        plot.setBackgroundPaint(Color.LIGHT_GRAY);
-        plot.setDomainGridlinePaint(Color.WHITE);
-        plot.setRangeGridlinePaint(Color.WHITE);
-        plot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
-        plot.setDomainCrosshairVisible(true);
-        plot.setRangeCrosshairVisible(true);
-
-        XYItemRenderer r = plot.getRenderer();
-        if (r instanceof XYLineAndShapeRenderer renderer) {
-            renderer.setDrawSeriesLineAsPath(true);
-        }
+        createPlot(plot, 5.0);
 
         DateAxis axis = (DateAxis) plot.getDomainAxis();
         SimpleDateFormat sdf3 = new SimpleDateFormat("MMM-yyyy");
         axis.setDateFormatOverride(sdf3);
-        ChartUtils.saveChartAsPNG(new File(chartname + ".png"), chart, 800, 300);
         return chart;
     }
 
 
-
-    //时间序列散点用⬇️（只要带时间戳！！！！！！）
+    /**
+     * Create Scatter Chart for Time Series Data
+     * @param dataset time series dataset
+     * @param stockSymbol stock symbol
+     * @return a scatter chart
+     * @throws IOException for save chart
+     */
     public static JFreeChart createTimeSeriesScatterChart(XYDataset dataset, String stockSymbol) throws IOException {
         String subtitle = "Simple return of " + stockSymbol;
         String x_label = "Date";
@@ -452,61 +433,52 @@ public class ChartAPI extends ApplicationFrame {
         XYPlot plot = (XYPlot) chart.getPlot();
         DateAxis dateAxis = setDateAxis();
         plot.setDomainAxis(dateAxis);
-        plot.setBackgroundPaint(Color.LIGHT_GRAY);
-        plot.setDomainGridlinePaint(Color.WHITE);
-        plot.setRangeGridlinePaint(Color.WHITE);
-        plot.setAxisOffset(new RectangleInsets(0.1, 0.1, 0.1, 0.1));
-        plot.setDomainCrosshairVisible(true);
-        plot.setRangeCrosshairVisible(true);
-
-        XYItemRenderer r = plot.getRenderer();
-        if (r instanceof XYLineAndShapeRenderer renderer) {
-            renderer.setDrawSeriesLineAsPath(true);
-        }
+        createPlot(plot, 0.1);
 
         DateAxis axis = (DateAxis) plot.getDomainAxis();
-        //ValueAxis axis = plot.getDomainAxis();
+
         SimpleDateFormat sdf3 = new SimpleDateFormat("dd-MM-yyyy");
         axis.setDateFormatOverride(sdf3);
-        ChartUtils.saveChartAsPNG(new File("chart2.png"), chart, 800, 300);
 
         return chart;
     }
 
-    //今天-昨天 收益对比用⬇️
+
+    /**
+     * Create normal scatter chart for two continuous data
+     * @param dataset normal continuous dataset
+     * @param stockSymbol stock symbol
+     * @return a normal scatter chart
+     * @throws IOException for save chart
+     */
     public static JFreeChart createScatterChart(XYDataset dataset, String stockSymbol) throws IOException {
-        String subtitle = stockSymbol + " Today's Return vs. Yeterday's";
+        String subtitle = stockSymbol + " Today's Return vs. Yesterday's";
         String x_label = "Rate of Return (-1)";
         String y_label = "Rate of Return";
         JFreeChart chart = ChartFactory.createScatterPlot(subtitle, x_label, y_label, dataset);
         chart.setBackgroundPaint(Color.WHITE);
 
         XYPlot plot = (XYPlot) chart.getPlot();
-        plot.setBackgroundPaint(Color.LIGHT_GRAY);
-        plot.setDomainGridlinePaint(Color.WHITE);
-        plot.setRangeGridlinePaint(Color.WHITE);
-        plot.setAxisOffset(new RectangleInsets(0.1, 0.1, 0.1, 0.1));
-        plot.setDomainCrosshairVisible(true);
-        plot.setRangeCrosshairVisible(true);
+        createPlot(plot, 0.1);
 
-        XYItemRenderer r = plot.getRenderer();
-        if (r instanceof XYLineAndShapeRenderer renderer) {
-            renderer.setDrawSeriesLineAsPath(true);
-        }
-
-        ValueAxis axis = plot.getDomainAxis();
-        ChartUtils.saveChartAsPNG(new File("chart3.png"), chart, 600, 600);
         return chart;
     }
 
 
+    /**
+     * Create Histogram
+     * @param dataset category data
+     * @param stockSymbol stock symbol
+     * @return a histogram
+     * @throws IOException for save chart
+     */
     public static JFreeChart createHistogram(CategoryDataset dataset, String stockSymbol) throws IOException {
         String subtitle = stockSymbol + " Histogram of Rate of Return";
-        String x_label = "Bin";
+        String x_label = "Return Bin (%)";
         String y_label = "Frequency";
         JFreeChart chart = ChartFactory.createBarChart(subtitle, x_label, y_label,dataset);
         chart.setBackgroundPaint(Color.WHITE);
-        CategoryPlot categoryplot = (CategoryPlot) chart.getCategoryPlot();
+        CategoryPlot categoryplot = chart.getCategoryPlot();
         categoryplot.setBackgroundPaint(Color.lightGray);
         categoryplot.setRangeGridlinePaint(Color.WHITE);
         categoryplot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
@@ -514,47 +486,59 @@ public class ChartAPI extends ApplicationFrame {
         categoryplot.setRangeCrosshairVisible(true);
 
         BarRenderer renderer1 = (BarRenderer) chart.getCategoryPlot().getRenderer();
-        renderer1.setMaximumBarWidth(0.015);
+        renderer1.setMaximumBarWidth(3);
         renderer1.setItemMargin(0.0);
-        ChartUtils.saveChartAsPNG(new File("chart4.png"), chart, 800, 300);
+
         return chart;
+    }
+
+    // 14.1 chart 1
+    public static JFreeChart getStockPriceChart(String stockSymbol) throws ParseException, IOException {
+        return ChartAPI.createLineChart(loadStockPriceData(stockSymbol), stockSymbol + " Adjusted Close Price", "Date", "Adjusted Close Price");
+    }
+
+    // 14.2 chart 2
+    public static JFreeChart getStockReturnChart(String stockSymbol) throws ParseException, IOException {
+        return ChartAPI.createTimeSeriesScatterChart(new XYSeriesCollection(loadStockReturnData((stockSymbol))), stockSymbol);
+    }
+
+    // 14.3 chart 3
+    public static JFreeChart getStockAutoCorrChart(String stockSymbol) throws IOException {
+        return ChartAPI.createScatterChart(loadReturnVSYesterday(stockSymbol), stockSymbol);
+    }
+
+    // 14.4 chart 4
+    public static JFreeChart getFreqHistogram(String stockSymbol) throws IOException {
+        return ChartAPI.createHistogram(loadFrequencyDataset(stockSymbol),stockSymbol);
+    }
+
+    // 7.1 chart 5
+    public static JFreeChart getCumReturnChart(String stockSymbol, String indexSymbol) throws ParseException, IOException {
+        return ChartAPI.createLineChart(createStockIndexCumReturn(stockSymbol,indexSymbol), stockSymbol + " and " + indexSymbol + " Cumulative Returns", "Date", "Relative Price");
+    }
+
+    // 7.2 chart 6
+    public static JFreeChart getStockVSIndexDailyReturn(String stockSymbol, String indexSymbol) throws ParseException, IOException {
+        return ChartAPI.createLineChart(createStockIndexReturnDataset(stockSymbol,indexSymbol), "Daily Return of " + stockSymbol + " and " + indexSymbol, "Date", "Daily Returns");
+    }
+
+    // 7.3 chart 7
+    public static JFreeChart getCAPM(String stockSymbol, String indexSymbol) throws ParseException, IOException {
+        return ChartAPI.createOLSLineChart(stockSymbol, indexSymbol);
     }
 
 
 
-    // Notice: We have 7 charts
-
-    // Notice! Find the Name of chart!! 要合适的名字
-    //createLineChart--14.1
-    //createTimeSeriesScatterChart--14.2
-    //createScatterChart--14.3
-
-//    public JPanel createDemoPanel(String stockSymbol) throws ParseException {
-//        String stockSymbol2 = "SPY";
-//        JFreeChart chart = createOLSLineChart(stockSymbol,stockSymbol2);// change here
-//        //SetHistogramView(chart);
-//        //JFreeChart chart1 = createLineChart(loadStockPriceData(stockSymbol2));
-//        ChartPanel panel = new ChartPanel(chart, false);
-//        panel.setFillZoomRectangle(true);
-//        panel.setMouseWheelEnabled(true);
-//        return panel;
-//    }
-
-
     public static void main(String[] args) throws ParseException, IOException {
-        String stockSymbol = "FB";   // Here stockSymbol is gotten from the UI
+        String stockSymbol = "AAPL";   // Here stockSymbol is gotten from the UI
         String indexSymbol = "SPY";
-        String title = "Chart";
 
-        JFreeChart chart1 = ChartAPI.createLineChart(loadStockPriceData(stockSymbol),stockSymbol,"chart1",stockSymbol + " Adjusted Close Price", "Date", "Adjusted Close Price");
-        JFreeChart chart2 = ChartAPI.createTimeSeriesScatterChart(loadStockReturnData(stockSymbol), stockSymbol);
-        JFreeChart chart3 = ChartAPI.createScatterChart(loadReturnDataset_yesterday(stockSymbol), stockSymbol);
-        JFreeChart chart4 = ChartAPI.createHistogram(loadFrequencyDataset(stockSymbol),stockSymbol);
-        JFreeChart chart5 = ChartAPI.createLineChart(createCumReturnDataset(stockSymbol,indexSymbol),stockSymbol,"chart5", stockSymbol + " and " + indexSymbol + " Cumulative Returns", "Date", "Relative Price");
-        JFreeChart chart6 = ChartAPI.createLineChart(createReturnDataset(stockSymbol,indexSymbol),stockSymbol,"chart6", "Daily Return of " + stockSymbol + " and " + indexSymbol, "Date", "Daily Returns");
-        JFreeChart chart7 = ChartAPI.createOLSLineChart(stockSymbol,indexSymbol);
-        //demo.pack();
-        //UIUtilities.centerFrameOnScreen(demo);
-        //demo.setVisible(true);
+        ChartUtils.saveChartAsPNG(new File("chart/chart1.png"), getStockPriceChart(stockSymbol), 800, 500);
+        ChartUtils.saveChartAsPNG(new File("chart/chart2.png"), getStockReturnChart(stockSymbol), 800, 500);
+        ChartUtils.saveChartAsPNG(new File("chart/chart3.png"), getStockAutoCorrChart(stockSymbol), 500, 500);
+        ChartUtils.saveChartAsPNG(new File("chart/chart4.png"), getFreqHistogram(stockSymbol), 900, 500);
+        ChartUtils.saveChartAsPNG(new File("chart/chart5.png"), getCumReturnChart(stockSymbol,indexSymbol), 800, 500);
+        ChartUtils.saveChartAsPNG(new File("chart/chart6.png"), getStockVSIndexDailyReturn(stockSymbol, indexSymbol), 800, 500);
+        ChartUtils.saveChartAsPNG(new File("chart/chart7.png"), getCAPM(stockSymbol, indexSymbol), 800, 500);
     }
 }

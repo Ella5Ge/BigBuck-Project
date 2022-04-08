@@ -166,6 +166,19 @@
     <servlet-class>
 		com.ibm.security.appscan.altoromutual.servlet.SurveyServlet</servlet-class>
   </servlet>
+  <servlet>
+    <description>
+    </description>
+    <display-name>
+      ChartServlet</display-name>
+    <servlet-name>ChartServlet</servlet-name>
+    <servlet-class>
+      com.ibm.security.appscan.altoromutual.servlet.ChartServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>DisplayChart</servlet-name>
+    <servlet-class>org.jfree.chart.servlet.DisplayChart</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>LoginServlet</servlet-name>
     <url-pattern>/doLogin</url-pattern>
@@ -233,6 +246,14 @@
   <servlet-mapping>
     <servlet-name>SurveyServlet</servlet-name>
     <url-pattern>/static/doSurvey</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>ChartServlet</servlet-name>
+    <url-pattern>/chart</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>DisplayChart</servlet-name>
+    <url-pattern>/DisplayChart</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>jsp</servlet-name>
