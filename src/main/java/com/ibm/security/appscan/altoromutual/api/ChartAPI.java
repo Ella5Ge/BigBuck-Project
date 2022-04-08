@@ -123,7 +123,6 @@ public class ChartAPI extends ApplicationFrame {
         for(int i = 0; i < size;i++){
             s.add(ror_date.get(i),ror.get(i));
         }
-
         return s;
     }
 

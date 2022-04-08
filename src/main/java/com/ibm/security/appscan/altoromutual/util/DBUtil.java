@@ -583,7 +583,7 @@ public class DBUtil {
 		int hour = cal.get(Calendar.HOUR_OF_DAY);
 		int minute = cal.get(Calendar.MINUTE);
 		int day = cal.get(Calendar.DAY_OF_WEEK);
-		boolean open = (hour > 9 || (hour == 9 && minute >= 30)) && (hour < 16) && (day <= 5 && day >= 1);
+		boolean open = (hour > 9 || (hour == 9 && minute >= 30)) && (hour < 16) && (day <= Calendar.FRIDAY && day >= Calendar.MONDAY);
 		return open;
 	}
 

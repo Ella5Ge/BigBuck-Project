@@ -108,7 +108,7 @@
                     return (false);
                 } else if (myform.new_passw.value != myform.new_passw2.value){
                     myform.new_passw2.focus();
-                    alert ("You must enter a valid password");
+                    alert ("Your passwords do not match. Please try again.");
                     return (false);
                 }
             }
