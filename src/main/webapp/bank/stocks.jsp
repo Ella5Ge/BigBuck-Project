@@ -52,15 +52,7 @@ IBM AltoroJ
 				<form action="doTrade" method="post" name="trade" id="trade" onsubmit="return (confirminput(trade));">
 
 					<h1> Trade Stock</h1>
-<%--			<p><span id="_ctl0__ctl0_Content_Main_message" style="color:#FF0066;font-size:12pt;font-weight:bold;">--%>
-<%--				<%--%>
-<%--					java.lang.String error = (String)request.getSession(true).getAttribute("loginError");--%>
-<%--					if (error != null && error.trim().length() > 0){--%>
-<%--						request.getSession().removeAttribute("loginError");--%>
-<%--						out.print(error);--%>
-<%--					}--%>
-<%--				%>--%>
-<%--			</span></p>--%>
+
 					<table cellSpacing="0" cellPadding="1" width="100%" border="0">
 						<tr>
 							<td><strong>Choose Account</strong></td>
@@ -96,7 +88,7 @@ IBM AltoroJ
 						</td>
 					</tr>
 						<tr>
-							<td colspan="2" align="center"><input type="submit" name="trade" value="Trade Stock" ID="trade"></td>
+							<td colspan="2" align="center"><input type="submit" name="trade" value="Trade Stock" ID="stockTrade"></td>
 						</tr>
 						<tr>
 							<td colspan="2">&nbsp;</td>
@@ -107,8 +99,9 @@ IBM AltoroJ
 								<span id="soapResp" name="soapResp" align="center" />
 							</td>
 						</tr>
-				</table>
-			</form>
+					</table>
+				</form>
+			</div>
 		</div>
     </td>	
 </div>
