@@ -125,15 +125,6 @@
     <description>
 		</description>
     <display-name>
-		SubscribeServlet</display-name>
-    <servlet-name>SubscribeServlet</servlet-name>
-    <servlet-class>
-		com.ibm.security.appscan.altoromutual.servlet.SubscribeServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <description>
-		</description>
-    <display-name>
 		FeedbackServlet</display-name>
     <servlet-name>FeedbackServlet</servlet-name>
     <servlet-class>
@@ -156,15 +147,6 @@
     <servlet-name>AdminLoginServlet</servlet-name>
     <servlet-class>
 		com.ibm.security.appscan.altoromutual.servlet.AdminLoginServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <description>
-		</description>
-    <display-name>
-		SurveyServlet</display-name>
-    <servlet-name>SurveyServlet</servlet-name>
-    <servlet-class>
-		com.ibm.security.appscan.altoromutual.servlet.SurveyServlet</servlet-class>
   </servlet>
   <servlet>
     <description>
@@ -220,10 +202,6 @@
     <url-pattern>/subscribe.aspx</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>SubscribeServlet</servlet-name>
-    <url-pattern>/doSubscribe</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
     <servlet-name>FeedbackServlet</servlet-name>
     <url-pattern>/sendFeedback</url-pattern>
   </servlet-mapping>
@@ -242,10 +220,6 @@
   <servlet-mapping>
     <servlet-name>AdminLoginServlet</servlet-name>
     <url-pattern>/admin/doAdminLogin</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>SurveyServlet</servlet-name>
-    <url-pattern>/static/doSurvey</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>ChartServlet</servlet-name>

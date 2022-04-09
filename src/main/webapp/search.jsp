@@ -8,7 +8,7 @@
 <%--application security testing tools. These vulnerabilities may present risks to the--%>
 <%--technical environment in which the application is installed. You must delete and--%>
 <%--uninstall this demonstration application upon completion of the demonstration for--%>
-<%--which it is intended. --%>
+<%--which it is intended.--%>
 
 <%--IBM DISCLAIMS ALL LIABILITY OF ANY KIND RESULTING FROM YOUR USE OF THE APPLICATION--%>
 <%--OR YOUR FAILURE TO DELETE THE APPLICATION FROM YOUR ENVIRONMENT UPON COMPLETION OF--%>
@@ -19,32 +19,32 @@
 <%--IBM AltoroJ--%>
 <%--(c) Copyright IBM Corp. 2008, 2013 All Rights Reserved.--%>
 <%--*/--%>
-<%--%> --%>
-<%--    --%>
+<%--%>--%>
+
 <%--<jsp:include page="header.jspf"/>--%>
 
 <%--<div id="wrapper" style="width: 99%;">--%>
 <%--&lt;%&ndash;	<jsp:include page="toc.jspf"/>&ndash;%&gt;--%>
 <%--    <td valign="top" colspan="3" class="bb">--%>
 <%--		<%@page import="com.ibm.security.appscan.altoromutual.util.ServletUtil"%>--%>
-<%--	--%>
+
 <%--		<%--%>
 <%--		String query = request.getParameter("query");--%>
 <%--		String[] results = null;--%>
 <%--		if (query != null && query.trim().length()>0)--%>
 <%--			results = ServletUtil.searchSite(query, request.getSession().getServletContext().getRealPath("/static/"));--%>
 <%--		%>--%>
-<%--		--%>
+
 <%--		<div class="fl" style="width: 99%;">--%>
-<%--		--%>
+
 <%--		<h1>Search Results</h1>--%>
-<%--		--%>
+
 <%--		<p>No results were found for the query:<br /><br />--%>
-<%--		--%>
+
 <%--		<%= query %>--%>
-<%--		--%>
-<%--		</div>    --%>
-<%--    </td>	--%>
+
+<%--		</div>--%>
+<%--    </td>--%>
 <%--</div>--%>
 
 <%--<jsp:include page="footer.jspf"/>--%>
