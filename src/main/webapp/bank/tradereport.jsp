@@ -42,7 +42,16 @@
                 String error = "";
 
                 double sharpe_ratio = ConnectYahooFinance.getSharpeRatio(user.getAccounts());
-                String sharpeRatioStr = String.format("%.2f", sharpe_ratio);
+                String sharpeRatioStr = null;
+                if (Double.isNaN(sharpe_ratio)) {
+                    sharpeRatioStr = "You did not have any stock holdings.";
+                }
+                else if (Double.isInfinite(sharpe_ratio)) {
+                    sharpeRatioStr = "It's your first day to trade. Sharpe Ratio is unavailable.";
+                }
+                else {
+                    sharpeRatioStr = "Your Sharpe Ratio is " + String.format("%.2f", sharpe_ratio);
+                }
 
                 Holding[] holdings = DBUtil.getHolding(user.getAccounts());
             %>
@@ -51,7 +60,7 @@
 
             <font style="bold" color="red"><%=error%></font>
             <form id="Form1" name="Form1" method="post" action="showHoldings">
-                <h2>Your Sharpe Ratio is <%=sharpeRatioStr%></h2>
+                <h2><%=sharpeRatioStr%></h2>
                 <h2>Holdings</h2>
                 <table cellspacing="0" cellpadding="3" rules="all" border="1" id="_ctl0__ctl0_Content_Main_MyTransactions" style="width:100%;border-collapse:collapse;">
                     <tr style="color:White;background-color:#BFD7DA;font-weight:bold;">

@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import static java.lang.Math.abs;
+
 
 public class ConnectYahooFinance{
 
@@ -160,9 +162,7 @@ public class ConnectYahooFinance{
         }
     }
 
-    // if 没有股票 ==> 显示nan
-    // if 今天刚买n只股票 ==> 显示0,
-    // if 已经有3只股票 买1只 ==>
+
     public static ArrayList<Double> getROR(String stockSymbol, String startDate) throws SQLException {
         ArrayList<Double> ROR = new ArrayList<>();
         ArrayList<StockData> stock = DBUtil.getStockDataFromSQL(stockSymbol, startDate, null);
@@ -191,13 +191,14 @@ public class ConnectYahooFinance{
         return weight;
     }
 
+
     public static double getVolatility(ArrayList<Double> averages) throws IOException {
         double volatility = 0.0;
         ArrayList<Double> excess_ret = new ArrayList<>();
 
         for(int i=0; i<averages.size(); i++){ //get rp-rf
-            double rp_rf = averages.get(i);
-            excess_ret.add(rp_rf);
+            double rp = averages.get(i);
+            excess_ret.add(rp);
         }
 
         double tot_excess_ret = 0.0; // get volatility: stdev of rp-rf
@@ -216,46 +217,49 @@ public class ConnectYahooFinance{
     }
 
 
+    // if no stock ==> Sharpe ratio is nan
+    // if today is the first day to trade ==> Sharpe ratio is 0
     public static double getSharpeRatio(Account[] accounts) throws SQLException, IOException {
         //for one account!
         double SharpeRatio = 0.0;
+
+        // calculate weight
         Holding[] holdings = DBUtil.getHolding(accounts);
         ArrayList<Double> weight = getWeight(holdings);
-        System.out.println("weight: " + weight);
+
+        // calculate risk free rate
         ArrayList<StockData> treasury_data = getHistoryData("%5ETNX","2022-04-05", null);
         double rf = treasury_data.get(treasury_data.size()-1).getAdj_close() / 100;
 
+        // calculate portfolio's rate of return
         ArrayList<Double> averages = new ArrayList<Double>(); //avg return for all stocks
         for(Holding holding: holdings){
             String startDate = DBUtil.getStartDate(holding.getAccountId(), holding.getStockSymbol());
-            System.out.println("startDate: " + startDate);
-            System.out.println("Date: " + startDate);
             ArrayList<Double> ror = getROR(holding.getStockSymbol(), startDate);
             double ror_sum = 0.0;
-            System.out.println("ror size: " + ror.size());
             for (int i=0; i<ror.size(); i++){
                 ror_sum += ror.get(i);
-                System.out.println(i + ": " + ror_sum);
             }
             double ror_avg = ror_sum / ror.size(); //for one stock
             averages.add(ror_avg);
         }
-        System.out.println("average: " + averages);
 
-        double rp = 0;//expected portfolio return
+        double rp = 0; //expected portfolio return
         for(int i=0; i<weight.size(); i++){
             if (Double.isNaN(averages.get(i))) {
-                averages.set(i,0.0);
+                averages.set(i, 0.0);
             }
             rp += weight.get(i) * averages.get(i);
         }
-        System.out.println("rp: " + rp);
-        System.out.println("rf: " + rf);
-        if (averages.size() == 1) {
+
+
+        // calculate volatility
+        if (abs(rp) > 0.0000000001 && averages.size() == 1) {
             averages = getROR(holdings[0].getStockSymbol(),null);
         }
         double volatility = getVolatility(averages);
-        System.out.println("volatility: " + volatility);
+
+        // calculate sharpe ratio
         SharpeRatio = (rp - rf) / volatility;
         return SharpeRatio;
     }
@@ -265,7 +269,7 @@ public class ConnectYahooFinance{
 //        JSONObject msg = getLiveObjects("AAPL");
 //        System.out.println(msg);
 
-        Account[] accounts = new Account[]{DBUtil.getAccount(800100)};
+        Account[] accounts = new Account[]{DBUtil.getAccount(800000)};
         Holding[] holdings = DBUtil.getHolding(accounts);
         ArrayList<StockData> list = null;
         ArrayList<Double> ror = new ArrayList<Double>();

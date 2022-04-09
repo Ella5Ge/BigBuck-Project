@@ -81,7 +81,7 @@ public class AccountViewServlet extends HttpServlet {
 			String startTime = request.getParameter("startDate");
 			String endTime = request.getParameter("endDate");
 
-			RequestDispatcher dispatcher = request.getRequestDispatcher("/bank/trade.jsp?" + ((startTime != null) ? "&startTime=" + startTime : "") + ((endTime != null) ? "&endTime=" + endTime : ""));
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/bank/tradereport.jsp?" + ((startTime != null) ? "&startTime=" + startTime : "") + ((endTime != null) ? "&endTime=" + endTime : ""));
 			dispatcher.forward(request, response);
 		}
 	}
