@@ -56,10 +56,10 @@
                 }
             %>
             <h1><%=title%></h1>
-            <form method="post" name="chart" action="chart" id="chart">
-                <input type="submit" value="Back to Chart">
-            </form>
             <img src="DisplayChart?filename=<%=chart%>" alt="API Exceeds Limit" width="600" height="400" />
+            <form method="post" name="chart" action="chart" id="chart">
+                <input type="submit" value="Back to Chart" name="backButton">
+            </form>
         </div>
     </td>
 </div>
