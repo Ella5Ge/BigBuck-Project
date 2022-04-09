@@ -14,4 +14,5 @@ Team members and accounts:
 Other user accounts:
 | Username   | Password   |
 | :--------: | :--------: |
+| jt1226     | 123456     |
 
