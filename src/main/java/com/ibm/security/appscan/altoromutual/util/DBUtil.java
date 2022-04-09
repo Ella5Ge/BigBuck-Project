@@ -769,7 +769,7 @@ public class DBUtil {
 			double price = resultSet.getDouble("COSTPRICE");
 			holdings.add(new Holding(actId, stockSymbol, stockName, amount, price));
 		}
-
+		System.out.println(holdings);
 		return holdings.toArray(new Holding[holdings.size()]);
 	}
 

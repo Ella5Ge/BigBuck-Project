@@ -20,76 +20,78 @@
 
 
     <div class="fl" style="width: 99%;">
-      <%
-        Account[] allAccounts = DBUtil.getAllTradeAccounts();
-        Holding[] holdings = DBUtil.getHolding(allAccounts);
-      %>
       <h1>Users Summary</h1>
-      <form id="trades" name="trades" method="post" action="/admin/viewTrade">
+<%--      <form id="trades" name="trades" method="post" action="/admin/viewTrade">--%>
         <table width="700" border="0" style="padding-bottom:10px;">
           <tr><td>
             <br><h2>Users' Sharpe Ratio</h2>
-            <table border=1 cellpadding=2 cellspacing=0 width='200'>
+            <table border=1 cellpadding=2 cellspacing=0 width='300'>
               <tr style="color:Black;background-color:#BFD7DA;font-weight:bold;">
-                <th width=90>Account ID</th>
-                <th width=90>Sharpe Ratio</th>
+                <th width=150>Account ID</th>
+                <th width=150>Sharpe Ratio</th>
               </tr>
             </table>
-            <DIV ID='userSharpeRatio' STYLE='width:590px; padding:0px; margin: 0px' ><table border=1 cellpadding=2 cellspacing=0 width='200'>
+            <DIV ID='userSharpeRatio' STYLE='width:590px; padding:0px; margin: 0px' ><table border=1 cellpadding=2 cellspacing=0 width='300'>
               <%
-                for (Account account: allAccounts) {
-                  double sharpe_ratio = ConnectYahooFinance.getSharpeRatio(new Account[]{account});
-                  String sharpeRatioStr = String.format("%.2f", sharpe_ratio);
+                Account[] allAccounts = DBUtil.getAllTradeAccounts();
+                if (allAccounts != null) {
+                  for (Account account: allAccounts) {
+                    double sharpe_ratio = ConnectYahooFinance.getSharpeRatio(new Account[]{account});
+                    String sharpeRatioStr = String.format("%.2f", sharpe_ratio);
               %>
               <tr>
-                <td width=90><%=account.getAccountId()%></td>
-                <td width=90 align=right><%=sharpeRatioStr%></td>
+                <td width=150><%=account.getAccountId()%></td>
+                <td width=150 align=right><%=sharpeRatioStr%></td>
               </tr>
+              <% } %>
               <% } %>
             </table></DIV>
           </td></tr>
           <tr><td>
             <br><h2>User's Holding Records</h2>
-            <table border=1 cellpadding=2 cellspacing=0 width='540'>
+            <table border=1 cellpadding=2 cellspacing=0 width='700'>
               <tr style="color:Black;background-color:#BFD7DA;font-weight:bold;">
-                <th width=90>Account ID</th>
-                <th width=90>Stock Symbol</th>
-                <th width=90>Stock Name</th>
-                <th width=90>Shares Holding</th>
-                <th width=90>Price per share</th>
+                <th width=15%>Account ID</th>
+                <th width=15%>Stock Symbol</th>
+                <th width=34%>Stock Name</th>
+                <th width=18%>Shares Holding</th>
+                <th width=18%>Price per share</th>
               </tr>
             </table>
-            <DIV ID='userHolding' STYLE='width:590px; padding:0px; margin: 0px' ><table border=1 cellpadding=2 cellspacing=0 width='540'>
+            <DIV ID='userHolding' STYLE='width:700px; padding:0px; margin: 0px' ><table border=1 cellpadding=2 cellspacing=0 width='700'>
               <%
-                for (Holding holding: holdings) {
-                  double dblcostPrice = holding.getCostPrice();
-                  String dollarFormat = (dblcostPrice<1)?"$0.00":"$.00";
-                  String costPrice = new DecimalFormat(dollarFormat).format(dblcostPrice);
+                Holding[] holdings = DBUtil.getHolding(DBUtil.getAllTradeAccounts());
+                if (holdings != null) {
+                  for (Holding holding: holdings) {
+                    double dblcostPrice = holding.getCostPrice();
+                    String dollarFormat = (dblcostPrice<1)?"$0.00":"$.00";
+                    String costPrice = new DecimalFormat(dollarFormat).format(dblcostPrice);
               %>
               <tr>
-                <td width=90><%=holding.getAccountId()%></td>
-                <td width=90><%=holding.getStockSymbol()%></td>
-                <td width=90><%=holding.getStockName()%></td>
-                <td width=90 align=right><%=holding.getHoldingAmount()%></td>
-                <td width=90 align=right><%=costPrice%></td>
+                <td width=15%><%=holding.getAccountId()%></td>
+                <td width=15%><%=holding.getStockSymbol()%></td>
+                <td width=34%><%=holding.getStockName()%></td>
+                <td width=18% align=right><%=holding.getHoldingAmount()%></td>
+                <td width=18% align=right><%=costPrice%></td>
               </tr>
+              <% } %>
               <% } %>
             </table></DIV>
           </td></tr>
           <tr><td>
             <br><h2>Today's Trade Records</h2>
-            <table border=1 cellpadding=2 cellspacing=0 width='700'>
+            <table border=1 cellpadding=2 cellspacing=0 width='840'>
               <tr style="color:Black;background-color:#BFD7DA;font-weight:bold;">
-                <th width=90>Trade ID</th>
-                <th width=90>Account ID</th>
-                <th width=90>Description</th>
-                <th width=90>Stock Symbol</th>
-                <th width=90>Stock Name</th>
-                <th width=90>Shares</th>
-                <th width=90>Price per share</th>
+                <th width=10%>Trade ID</th>
+                <th width=12%>Account ID</th>
+                <th width=12%>Description</th>
+                <th width=15%>Stock Symbol</th>
+                <th width=26%>Stock Name</th>
+                <th width=10%>Shares</th>
+                <th width=15%>Price per share</th>
               </tr>
             </table>
-            <DIV ID='record' STYLE='width:710px; padding:0px; margin: 0px' ><table border=1 cellpadding=2 cellspacing=0 width='700'>
+            <DIV ID='record' STYLE='width:880px; padding:0px; margin: 0px' ><table border=1 cellpadding=2 cellspacing=0 width='840'>
               <% Trade[] trades = new Trade[0];
                 try {
                   Timestamp date = new Timestamp(new java.util.Date().getTime());
@@ -99,25 +101,27 @@
                 } catch (SQLException e) {
                   e.printStackTrace();
                 }
-                for (Trade trade: trades) {
-                  double dblcostPrice = trade.getPrice();
-                  String dollarFormat = (dblcostPrice<1)?"$0.00":"$.00";
-                  String price = new DecimalFormat(dollarFormat).format(dblcostPrice);
+                if (trades != null) {
+                  for (Trade trade: trades) {
+                    double dblcostPrice = trade.getPrice();
+                    String dollarFormat = (dblcostPrice<1)?"$0.00":"$.00";
+                    String price = new DecimalFormat(dollarFormat).format(dblcostPrice);
               %>
               <tr>
-                <td width=90><%=trade.getTradeId()%></td>
-                <td width=90><%=trade.getAccountId()%></td>
-                <td width=90><%=trade.getTradeType()%></td>
-                <td width=90><%=trade.getStockSymbol()%></td>
-                <td width=90><%=trade.getStockName()%></td>
-                <td width=90 align=right><%=trade.getAmount()%></td>
-                <td width=90 align=right><%=price%></td>
+                <td width=10%><%=trade.getTradeId()%></td>
+                <td width=12%><%=trade.getAccountId()%></td>
+                <td width=12%><%=trade.getTradeType()%></td>
+                <td width=15%><%=trade.getStockSymbol()%></td>
+                <td width=26%><%=trade.getStockName()%></td>
+                <td width=10% align=right><%=trade.getAmount()%></td>
+                <td width=15% align=right><%=price%></td>
               </tr>
+              <% } %>
               <% } %>
             </table></DIV>
           </td></tr>
         </table>
-      </form>
+<%--      </form>--%>
     </div>
   </td>
 </div>

@@ -7,6 +7,7 @@ import org.json.*;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -29,8 +30,6 @@ public class ConnectYahooFinance{
 
     /**
      * Get previous 5-year data
-     * @param
-     * @return
      */
     public static long GenerateEndTimestamp(){
         //get timestamp
@@ -42,8 +41,7 @@ public class ConnectYahooFinance{
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         //calendar.add(Calendar.DAY_OF_MONTH,1);
         String end_date_format = sdf.format(current_date);
-        long end_date_timestamp = (long) (Timestamp.valueOf(end_date_format).getTime())/1000;
-        return end_date_timestamp;
+        return (Timestamp.valueOf(end_date_format).getTime())/1000;
     }
 
     public static long GenerateStartTimestamp(){
@@ -55,21 +53,19 @@ public class ConnectYahooFinance{
         //calendar.add(Calendar.DAY_OF_MONTH,-1);
         Date start_date = calendar.getTime();
         String start_date_format = sdf.format(start_date);
-        long start_date_timestamp = (long) (Timestamp.valueOf(start_date_format).getTime())/1000;
-        return start_date_timestamp;
+        return (Timestamp.valueOf(start_date_format).getTime())/1000;
     }
 
     public static long StringtoTimestamp(String Datestr){
         //get timestamp
         String Datestr1 = Datestr + " 00:00:00";
-        long timestamp = (long) (Timestamp.valueOf(Datestr1).getTime())/1000;
-        return timestamp;
+        return (Timestamp.valueOf(Datestr1).getTime())/1000;
     }
 
     public static ArrayList<StockData> getHistoryData(String symbol, String startdate, String enddate){
-        ArrayList<StockData> history_data = new ArrayList<StockData>();
-        long start_date_timestamp = 0;
-        long end_date_timestamp = 0;
+        ArrayList<StockData> history_data = new ArrayList<>();
+        long start_date_timestamp;
+        long end_date_timestamp;
 
         if(startdate == null && enddate == null){
             start_date_timestamp = GenerateStartTimestamp();
@@ -92,15 +88,15 @@ public class ConnectYahooFinance{
         String time_params = "?period1=" + start_date_timestamp + "&period2=" + end_date_timestamp;
         String url = YAHOO_FINANCE_URL_START + symbol + time_params + YAHOO_FINANCE_URL_END;
 
-        URL MyURL = null;
-        URLConnection con = null;
-        InputStreamReader ins = null;
+        URL MyURL;
+        URLConnection con;
+        InputStreamReader ins;
         BufferedReader in = null;
 
         try{
             MyURL = new URL(url);
             con = MyURL.openConnection();
-            ins = new InputStreamReader(con.getInputStream(), "UTF-8");
+            ins = new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8);
             in = new BufferedReader(ins);
             String newLine = in.readLine();
 
@@ -164,8 +160,11 @@ public class ConnectYahooFinance{
         }
     }
 
+    // if 没有股票 ==> 显示nan
+    // if 今天刚买n只股票 ==> 显示0,
+    // if 已经有3只股票 买1只 ==>
     public static ArrayList<Double> getROR(String stockSymbol, String startDate) throws SQLException {
-        ArrayList<Double> ROR = new ArrayList<Double>();
+        ArrayList<Double> ROR = new ArrayList<>();
         ArrayList<StockData> stock = DBUtil.getStockDataFromSQL(stockSymbol, startDate, null);
         int n = stock.size();
         for(int i=1; i<n; i++){
@@ -192,12 +191,12 @@ public class ConnectYahooFinance{
         return weight;
     }
 
-    public static double getVolatility(ArrayList<Double> averages, double rf) throws IOException {
+    public static double getVolatility(ArrayList<Double> averages) throws IOException {
         double volatility = 0.0;
         ArrayList<Double> excess_ret = new ArrayList<>();
 
         for(int i=0; i<averages.size(); i++){ //get rp-rf
-            double rp_rf = averages.get(i) - rf;
+            double rp_rf = averages.get(i);
             excess_ret.add(rp_rf);
         }
 
@@ -205,6 +204,7 @@ public class ConnectYahooFinance{
         for(int i=0; i<excess_ret.size(); i++){
             tot_excess_ret += excess_ret.get(i);
         }
+
         double avg_excess_ret = tot_excess_ret / excess_ret.size();
         double sum_diff_mean = 0.0;
         for(int i=0; i<excess_ret.size(); i++){
@@ -217,7 +217,7 @@ public class ConnectYahooFinance{
 
 
     public static double getSharpeRatio(Account[] accounts) throws SQLException, IOException {
-        //only for one account!
+        //for one account!
         double SharpeRatio = 0.0;
         Holding[] holdings = DBUtil.getHolding(accounts);
         ArrayList<Double> weight = getWeight(holdings);
@@ -228,6 +228,7 @@ public class ConnectYahooFinance{
         ArrayList<Double> averages = new ArrayList<Double>(); //avg return for all stocks
         for(Holding holding: holdings){
             String startDate = DBUtil.getStartDate(holding.getAccountId(), holding.getStockSymbol());
+            System.out.println("startDate: " + startDate);
             System.out.println("Date: " + startDate);
             ArrayList<Double> ror = getROR(holding.getStockSymbol(), startDate);
             double ror_sum = 0.0;
@@ -253,10 +254,9 @@ public class ConnectYahooFinance{
         if (averages.size() == 1) {
             averages = getROR(holdings[0].getStockSymbol(),null);
         }
-        double volatility = getVolatility(averages, rf);
+        double volatility = getVolatility(averages);
         System.out.println("volatility: " + volatility);
         SharpeRatio = (rp - rf) / volatility;
-
         return SharpeRatio;
     }
 
@@ -265,7 +265,7 @@ public class ConnectYahooFinance{
 //        JSONObject msg = getLiveObjects("AAPL");
 //        System.out.println(msg);
 
-        Account[] accounts = new Account[]{DBUtil.getAccount(800000)};
+        Account[] accounts = new Account[]{DBUtil.getAccount(800100)};
         Holding[] holdings = DBUtil.getHolding(accounts);
         ArrayList<StockData> list = null;
         ArrayList<Double> ror = new ArrayList<Double>();
