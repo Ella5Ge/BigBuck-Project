@@ -1,8 +1,8 @@
 # fintech512-bigbucks
 
-Team 10
-Team name: Meowth
-Team members and accounts:
+Team 10  
+Team name: Meowth  
+Team members and accounts:  
 | Name             | NetID  | Username | Password |
 | :--------------: | :-----:| :------: | :------: |
 | Xiucen Ge        | xg75   | ella     | 000000   |
@@ -11,7 +11,7 @@ Team members and accounts:
 | Shuoheng Zhang   | sz248  |          |          |
 | Yufeng Zheng     | yz716  |          |          |
 
-Other user accounts:
+Other user accounts:  
 | Username   | Password   |
 | :--------: | :--------: |
 | jt1226     | 123456     |
