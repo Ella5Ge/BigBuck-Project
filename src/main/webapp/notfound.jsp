@@ -25,7 +25,6 @@ IBM AltoroJ
 <jsp:include page="header.jspf"/>
 
 <div id="wrapper" style="width: 99%;">
-	<jsp:include page="toc.jspf"/>
     <td valign="top" colspan="3" class="bb">
 		<%@page isErrorPage="true" %>
 		<div class="fl" style="width: 99%;">
