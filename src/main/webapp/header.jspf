@@ -33,7 +33,8 @@
                 <td rowspan="2"><a id="HyperLink1" href="<%=request.getContextPath()%>/index.jsp"><img src="<%=request.getContextPath()%>/images/clogo.png" width=283 height=80/></a></td>
                 <td align="right" valign="top">
                     <% String specialLink = ServletUtil.getAppProperty("specialLink"); %>
-                    <a  href="<%=request.getContextPath()%>/bank/customize.jsp">Customize Site Language</a> | <a id="HyperLink4" href="<%=request.getContextPath()%>/feedback.jsp">Feedback</a> | <a id="LoginLink" href="<%=(!loggedIn)?request.getContextPath()+"/login.jsp":request.getContextPath()+"/logout.jsp"%>"><font style="font-weight: bold; color: red;"><%=(!loggedIn)?"Sign In":"Sign Off"%></font></a>
+                    <a id="HyperLink4" href="<%=request.getContextPath()%>/feedback.jsp">Feedback</a> | <a id="LoginLink" href="<%=(!loggedIn)?request.getContextPath()+"/login.jsp":request.getContextPath()+"/logout.jsp"%>"><font style="font-weight: bold; color: red;"><%=(!loggedIn)?"Sign In":"Sign Off"%></font></a>
+<%--                    <a  href="<%=request.getContextPath()%>/bank/customize.jsp">Customize Site Language</a> |--%>
                 </td>
             </tr>
         </table>

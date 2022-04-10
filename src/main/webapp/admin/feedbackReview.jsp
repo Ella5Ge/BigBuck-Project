@@ -10,7 +10,7 @@
 <style>
 	body {
 		background-color: gainsboro;
-		font-size: 16px;
+		font-size: 12px;
 	}
 	.div_top_1 {
 		height: 5px;
