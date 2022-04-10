@@ -4,30 +4,37 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 		 pageEncoding="ISO-8859-1"%>
 
-<%
-	/**
-	 This application is for demonstration use only. It contains known application security
-	 vulnerabilities that were created expressly for demonstrating the functionality of
-	 application security testing tools. These vulnerabilities may present risks to the
-	 technical environment in which the application is installed. You must delete and
-	 uninstall this demonstration application upon completion of the demonstration for
-	 which it is intended.
-
-	 IBM DISCLAIMS ALL LIABILITY OF ANY KIND RESULTING FROM YOUR USE OF THE APPLICATION
-	 OR YOUR FAILURE TO DELETE THE APPLICATION FROM YOUR ENVIRONMENT UPON COMPLETION OF
-	 A DEMONSTRATION. IT IS YOUR RESPONSIBILITY TO DETERMINE IF THE PROGRAM IS APPROPRIATE
-	 OR SAFE FOR YOUR TECHNICAL ENVIRONMENT. NEVER INSTALL THE APPLICATION IN A PRODUCTION
-	 ENVIRONMENT. YOU ACKNOWLEDGE AND ACCEPT ALL RISKS ASSOCIATED WITH THE USE OF THE APPLICATION.
-
-	 IBM AltoroJ
-	 (c) Copyright IBM Corp. 2008, 2013 All Rights Reserved.
-	 */
-%>
-
 <jsp:include page="/header.jspf"/>
+<jsp:include page="membertoc.jspf"/>
+<body style="background-color: #2F4F4F"></body>
+<style>
+	body {
+		background-color: gainsboro;
+		font-size: 16px;
+	}
+	.div_top_1 {
+		height: 5px;
+		width: 100%;
+	}
+	.main {
+		width: 90%;
+		height: 700px;
+		background-color: #FFFFFF;
+		margin: 0 auto;
+	}
+	.div_text {
+		width: 600px;
+		margin-left: 5%;
+		text-align: left;
+	}
+</style>
+<body>
+<div class="div_top_1">
 
-<div id="wrapper" style="width: 99%;">
-	<jsp:include page="membertoc.jspf"/>
+
+</div>
+<div class="main" id="wrapper">
+
 	<td valign="top" colspan="3" class="bb">
 		<%@page import="com.ibm.security.appscan.altoromutual.model.Account"%>
 		<%@page import="java.text.SimpleDateFormat"%>
@@ -58,6 +65,7 @@
 
 			<h1>Account History - <%=accountName%></h1>
 
+			<div align="center">
 			<table width="700" border="0">
 				<tr><td colspan=2>
 					<table cellSpacing="0" cellPadding="1" width="100%" border="1">
@@ -145,7 +153,7 @@
 					</table></DIV>
 				</td></tr>
 			</table>
-
+			</div>
 		</div>
 	</td>
 </div>
