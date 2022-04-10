@@ -66,9 +66,9 @@
 			<h1>Account History - <%=accountName%></h1>
 
 			<div align="center">
-			<table width="700" border="0">
+			<table border="0">
 				<tr><td colspan=2>
-					<table cellSpacing="0" cellPadding="1" width="100%" border="1">
+					<table cellSpacing="0" cellPadding="1" width="700" border="1" id="_ctl0__ctl0_Content_Main_MyTransactions" style="width:100%;border-collapse:collapse;">
 						<tr>
 							<th colSpan="2">
 								Balance Detail</th></tr>
@@ -99,17 +99,11 @@
 				</td></tr>
 				<tr><td>
 					<br><b>10 Most Recent Trade Records</b>
-					<table border=1 cellpadding=2 cellspacing=0 width='700'>
-						<tr><th bgcolor=#cccccc width=90>Date</th>
-							<th width=90>Description</th>
-							<th width=90>Ticker Symbol</th>
-							<th width=90>Stock Name</th>
-							<th width=90>Amount</th>
-							<th width=90>Price per share</th>
-						</tr>
-					</table>
-					<DIV ID='recent' STYLE='overflow: hidden; overflow-y: scroll; width:710px; height: 152px; padding:0px; margin: 0px' >
-						<table border=1 cellpadding=2 cellspacing=0 width='700'>
+					<DIV ID='recent' STYLE='overflow: hidden; overflow-y: scroll; width:90%; height: 152px; padding:0px; margin: 0px' >
+						<table cellspacing="0" cellpadding="3" rules="all" border="1" id="_ctl0__ctl0_Content_Main_MyTransactions" style="width:100%;border-collapse:collapse;">
+							<tr style="color:White;background-color:#BFD7DA;font-weight:bold;">
+								<td>Date</td><td>Description</td><td>Stock Symbol</td><td>Stock Name</td><td>Amount</td><td>Price Per Share</td>
+							</tr>
 						<%
 							Trade[] trades = DBUtil.getTradeRecords(null, null, new Account[]{DBUtil.getAccount(Long.valueOf(paramName))}, 10);
 							for (Trade trade: trades){
@@ -130,14 +124,12 @@
 				</td></tr>
 				<tr><td>
 					<br><b>Holding List</b>
-					<table border=1 cellpadding=2 cellspacing=0 width='600'>
-						<tr><th width=90>Ticker Symbol</th>
-							<th width=90>Stock Name</th>
-							<th width=90>Shares Holding</th>
-							<th width=90>Price per share</th>
-						</tr>
-					</table>
-					<DIV ID='hold' STYLE='overflow: hidden; overflow-y: scroll; width:710px; height: 152px; padding:0px; margin: 0px' ><table border=1 cellpadding=2 cellspacing=0 width='600'>
+
+					<DIV ID='hold' STYLE='overflow: hidden; overflow-y: scroll; width:90%; height: 152px; padding:0px; margin: 0px' >
+						<table cellspacing="0" cellpadding="3" rules="all" border="1" id="_ctl0__ctl0_Content_Main_MyTransactions" style="width:100%;border-collapse:collapse;">
+							<tr style="color:White;background-color:#BFD7DA;font-weight:bold;">
+								<td>Ticker Symbol</td><td>Stock Name</td><td>Shares Holding</td><td>Price per share</td>
+							</tr>
 						<%
 							Holding[] holdings = DBUtil.getHolding(new Account[]{DBUtil.getAccount(Long.valueOf(paramName))});
 							for (Holding holding: holdings){
