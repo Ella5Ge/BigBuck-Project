@@ -11,7 +11,7 @@
 <html>
 <head>
 	<base href="<%=basePath%>">
-	<title>My JSP 'index.jsp' starting page</title>
+	<title>BigBucks Login Page</title>
 </head>
 
 <body style="background-color: #2F4F4F"></body>
@@ -22,7 +22,7 @@
 	}
 
 	.div_top_1 {
-		height: 140px;
+		height: 120px;
 		width: 100%;
 	}
 
@@ -115,11 +115,7 @@
 		height: 24px;
 		text-align: center;
 	}
-	.span_signup{
 
-		color: #e35b5a;
-		font-size: 13px;
-	}
 </style>
 <body>
 <div class="div_top_1">
@@ -168,7 +164,7 @@
 				<input class="button_login" type="submit" value="login"/>
 			</div>
 			<br /><br />
-			<div class="div_signup">
+			<div align="center">
 				Don't have an account? Please <a href="signup.jsp"> register</a>.
 			</div>
 		</form>
