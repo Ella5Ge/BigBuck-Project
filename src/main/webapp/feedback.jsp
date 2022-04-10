@@ -1,29 +1,36 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-    
-<%
-/**
- This application is for demonstration use only. It contains known application security
-vulnerabilities that were created expressly for demonstrating the functionality of
-application security testing tools. These vulnerabilities may present risks to the
-technical environment in which the application is installed. You must delete and
-uninstall this demonstration application upon completion of the demonstration for
-which it is intended. 
 
-IBM DISCLAIMS ALL LIABILITY OF ANY KIND RESULTING FROM YOUR USE OF THE APPLICATION
-OR YOUR FAILURE TO DELETE THE APPLICATION FROM YOUR ENVIRONMENT UPON COMPLETION OF
-A DEMONSTRATION. IT IS YOUR RESPONSIBILITY TO DETERMINE IF THE PROGRAM IS APPROPRIATE
-OR SAFE FOR YOUR TECHNICAL ENVIRONMENT. NEVER INSTALL THE APPLICATION IN A PRODUCTION
-ENVIRONMENT. YOU ACKNOWLEDGE AND ACCEPT ALL RISKS ASSOCIATED WITH THE USE OF THE APPLICATION.
-
-IBM AltoroJ
-(c) Copyright IBM Corp. 2008, 2013 All Rights Reserved.
-*/
-%> 
-    
 <jsp:include page="header.jspf"/>
+<jsp:include page="/bank/membertoc.jspf"/>
+<body style="background-color: #2F4F4F"></body>
+<style>
+	body {
+		background-color: gainsboro;
+		font-size: 12px;
+	}
+	.div_top_1 {
+		height: 5px;
+		width: 100%;
+	}
+	.main {
+		width: 90%;
+		height: 550px;
+		background-color: #FFFFFF;
+		margin: 0 auto;
+	}
+	.div_text {
+		width: 600px;
+		margin-left: 5%;
+		text-align: left;
+	}
+</style>
+<body>
+<div class="div_top_1">
 
-<div id="wrapper" style="width: 99%;">
+
+</div>
+<div class="main" id="wrapper" style="width: 99%;">
     <td valign="top" colspan="3" class="bb">
 		<%@page import="com.ibm.security.appscan.altoromutual.model.User"%>
 
@@ -33,8 +40,10 @@ IBM AltoroJ
 		} catch (Exception e) { /* do nothing */ }%>
 		
 		<div class="fl" style="width: 99%;">
-		
-		<h1>Feedback</h1>
+		<div align="center">
+			<h1>Feedback</h1>
+		</div>
+		<div class="div_text">
 		
 		<p>Our Frequently Asked Questions area will help you with many of your inquiries.<br />
 		If you can't find your question, return to this page and use the e-mail form below.</p>
@@ -79,7 +88,7 @@ IBM AltoroJ
 		<br /><br />
 		
 		<img id="bug" src="" height=1 width=1 />
-		
+		</div>
 		</div>
     </td>
 	

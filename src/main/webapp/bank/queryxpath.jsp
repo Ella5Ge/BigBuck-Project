@@ -2,8 +2,34 @@
     pageEncoding="ISO-8859-1"%>
 
 <jsp:include page="/header.jspf"/>
+<body style="background-color: #2F4F4F"></body>
+<style>
+	body {
+		background-color: gainsboro;
+		font-size: 12px;
+	}
+	.div_top_1 {
+		height: 5px;
+		width: 100%;
+	}
+	.main {
+		width: 90%;
+		height: 400px;
+		background-color: #FFFFFF;
+		margin: 0 auto;
+	}
+	.div_text {
+		width: 600px;
+		margin-left: 5%;
+		text-align: left;
+	}
+</style>
+<body>
+<div class="div_top_1">
 
-<div id="wrapper" style="width: 99%;">
+
+</div>
+<div class="main" id="wrapper" style="width: 99%;">
 	<jsp:include page="membertoc.jspf"/>
     <td valign="top" colspan="3" class="bb">
 		<%@page import="com.ibm.security.appscan.altoromutual.util.ServletUtil"%>
