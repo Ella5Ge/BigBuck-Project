@@ -22,9 +22,9 @@ IBM AltoroJ
 <%@page import="java.util.Calendar"%>
 </tr>
 </table>
-<div id="footer" align="center" style="width: 100%;">
+<div id="footer" align="center" style="width: 99%;">
+    <h5 style="color: #FFFFFF">&copy;&nbsp;<% out.print(Calendar.getInstance().get(Calendar.YEAR)); %> BigBucks.</h5>
 
-    &copy;&nbsp;<% out.print(Calendar.getInstance().get(Calendar.YEAR)); %> BigBucks.
 </div>
 
 </body>
