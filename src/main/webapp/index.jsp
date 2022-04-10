@@ -8,10 +8,10 @@
 
 <style type="text/css">
 	hr{
-		margin: 20px 0;
+		margin: 18px 0;
 	}
 	a{
-		font-size: 20px;
+		font-size: 18px;
 		font-weight: bold;
 	}
 	a:visited {
