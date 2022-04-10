@@ -1,15 +1,35 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: liwanting
-  Date: 4/7/22
-  Time: 8:51 PM
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <jsp:include page="header.jspf"/>
+<jsp:include page="bank/membertoc.jspf"/>
+<body style="background-color: #2F4F4F"></body>
+<style>
+    body {
+        background-color: gainsboro;
+        font-size: 12px;
+    }
+    .div_top_1 {
+        height: 5px;
+        width: 100%;
+    }
+    .main {
+        width: 90%;
+        height: 550px;
+        background-color: #FFFFFF;
+        margin: 0 auto;
+    }
+    .div_text {
+        width: 600px;
+        margin-left: 5%;
+        text-align: left;
+    }
+</style>
+<body>
+<div class="div_top_1">
 
-<div id="wrapper" style="width: 99%;">
-    <jsp:include page="bank/membertoc.jspf"/>
+
+</div>
+
+<div class="main" id="wrapper">
     <td valign="top" colspan="3" class="bb">
         <div class="fl" style="width: 99%;">
             <script type="text/javascript">
@@ -31,6 +51,10 @@
             <div class="fl" style="width: 99%;">
             <form method="post" name="chart" action="chartdisplay.jsp" id="chart" onsubmit="return (confirminput(chart));">
                 <h1>Advanced Charting</h1>
+                <div class="div_text">
+                    <dr />
+                    <dr>Please enter stock symbol and choose one of charts.
+                        <dr /><dr />
                 <table cellSpacing="0" cellPadding="1" width="100%" border="0">
                     <tr>
                         <td><strong>Enter Stock Symbol:</strong></td>
@@ -54,11 +78,27 @@
                         <td colspan="2" align="center"><input type="submit" value="Submit"></td>
                     </tr>
                 </table>
+                </div>
             </form>
+
+            <div class="div_text">
+                <br />
+                <h2>What do you need charts?</h2>
+                Don’t just buy a stock bases on advice. Some people may make money buying a stock because of something like cheap valuation but if you have no clue on how to read financial statements and understand the industry that the stock is in then you will probably lose money.
+                <br>And the best way to understand stock market and evaluate a stock is by looking at a stock chart.
+                <br />
+                <h2>What kind of charts we provides?</h2>
+                Stock Price Plot
+                <br>Stock Return Plot
+                <br>Stock AR(1) Scatter Plot
+                <br>Stock Return Histogram
+                <br>Stock Price versus SPY Index Price Plot
+                <br>Stock Return versus SPY Index Return Plot
+                <br>The Scatter Plot of Stock Return versus Index Return
+            </div>
             </div>
         </div>
     </td>
 </div>
-
 
 <jsp:include page="footer.jspf"/>
