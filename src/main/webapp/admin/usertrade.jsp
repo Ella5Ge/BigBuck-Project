@@ -4,12 +4,36 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
          pageEncoding="ISO-8859-1"%>
 
-
-
 <jsp:include page="/header.jspf"/>
+<jsp:include page="/bank/membertoc.jspf"/>
+<body style="background-color: #2F4F4F"></body>
+<style>
+  body {
+    background-color: gainsboro;
+    font-size: 16px;
+  }
+  .div_top_1 {
+    height: 5px;
+    width: 100%;
+  }
+  .main {
+    width: 90%;
+    height: 850px;
+    background-color: #FFFFFF;
+    margin: 0 auto;
+  }
+  .div_text {
+    width: 600px;
+    margin-left: 5%;
+    text-align: left;
+  }
+</style>
+<body>
+<div class="div_top_1">
 
-<div id="wrapper" style="width: 99%;">
-  <jsp:include page="/bank/membertoc.jspf"/>
+
+</div>
+<div class="main" id="wrapper">
   <td valign="top" colspan="3" class="bb">
     <%@ page import="com.ibm.security.appscan.altoromutual.model.Account" %>
     <%@ page import="java.text.DecimalFormat" %>
@@ -22,16 +46,17 @@
     <div class="fl" style="width: 99%;">
       <h1>Users Summary</h1>
 <%--      <form id="trades" name="trades" method="post" action="/admin/viewTrade">--%>
-        <table width="700" border="0" style="padding-bottom:10px;">
+<%--        <table width="700" border="0" style="padding-bottom:10px;">--%>
+
+      <div align="center">
+          <table border="0">
           <tr><td>
-            <br><h2>Users' Sharpe Ratio</h2>
-            <table border=1 cellpadding=2 cellspacing=0 width='300'>
-              <tr style="color:Black;background-color:#BFD7DA;font-weight:bold;">
-                <th width=150>Account ID</th>
-                <th width=150>Sharpe Ratio</th>
+            <br><b>Users' Sharpe Ratio</b>
+            <DIV ID='userSharpeRatio' STYLE='overflow: hidden; overflow-y: scroll; width:70%; height: 150px; padding:0px; margin: 0px'>
+              <table border=1 cellpadding=2 cellspacing=0 id="_ctl0__ctl0_Content_Main_MyTransactions" style="width:100%;border-collapse:collapse;">
+              <tr style="color:White;background-color:#BFD7DA;font-weight:bold;">
+                <td>Account ID</td><td>Sharpe Ratio</td>
               </tr>
-            </table>
-            <DIV ID='userSharpeRatio' STYLE='width:590px; padding:0px; margin: 0px' ><table border=1 cellpadding=2 cellspacing=0 width='300'>
               <%
                 Account[] allAccounts = DBUtil.getAllTradeAccounts();
                 if (allAccounts != null) {
@@ -50,17 +75,12 @@
             </table></DIV>
           </td></tr>
           <tr><td>
-            <br><h2>User's Holding Records</h2>
-            <table border=1 cellpadding=2 cellspacing=0 width='700'>
-              <tr style="color:Black;background-color:#BFD7DA;font-weight:bold;">
-                <th width=15%>Account ID</th>
-                <th width=15%>Stock Symbol</th>
-                <th width=34%>Stock Name</th>
-                <th width=18%>Shares Holding</th>
-                <th width=18%>Price per share</th>
+            <br><b>User's Holding Records</b>
+            <DIV ID='userHolding' STYLE='overflow: hidden; overflow-y: scroll; width:90%; height: 220px; padding:0px; margin: 0px'>
+            <table border=1 cellpadding=2 cellspacing=0 id="_ctl0__ctl0_Content_Main_MyTransactions" style="width:100%;border-collapse:collapse;">
+              <tr style="color:White;background-color:#BFD7DA;font-weight:bold;">
+                <td>Account ID</td><td>Stock Symbol</td><td>Stock Name</td><td>Shares Holding</td><td>Price Per Share</td>
               </tr>
-            </table>
-            <DIV ID='userHolding' STYLE='width:700px; padding:0px; margin: 0px' ><table border=1 cellpadding=2 cellspacing=0 width='700'>
               <%
                 Holding[] holdings = DBUtil.getHolding(DBUtil.getAllTradeAccounts());
                 if (holdings != null) {
@@ -81,19 +101,12 @@
             </table></DIV>
           </td></tr>
           <tr><td>
-            <br><h2>Today's Trade Records</h2>
-            <table border=1 cellpadding=2 cellspacing=0 width='840'>
-              <tr style="color:Black;background-color:#BFD7DA;font-weight:bold;">
-                <th width=10%>Trade ID</th>
-                <th width=12%>Account ID</th>
-                <th width=12%>Description</th>
-                <th width=15%>Stock Symbol</th>
-                <th width=26%>Stock Name</th>
-                <th width=10%>Shares</th>
-                <th width=15%>Price per share</th>
+            <br><b>Today's Trade Records</b>
+            <DIV ID='record' STYLE='overflow: hidden; overflow-y: scroll; width:90%; height: 220px; padding:0px; margin: 0px'>
+              <table border=1 cellpadding=2 cellspacing=0 id="_ctl0__ctl0_Content_Main_MyTransactions" style="width:100%;border-collapse:collapse;">
+              <tr style="color:White;background-color:#BFD7DA;font-weight:bold;">
+                <td>Trade ID</td><td>Account ID</td><td>Description</td><td>Stock Symbol</td><td>Stock Name</td><td>Shares</td><td>Price Per Share</td>
               </tr>
-            </table>
-            <DIV ID='record' STYLE='width:880px; padding:0px; margin: 0px' ><table border=1 cellpadding=2 cellspacing=0 width='840'>
               <% Trade[] trades = new Trade[0];
                 try {
                   Timestamp date = new Timestamp(new java.util.Date().getTime());
@@ -123,7 +136,9 @@
             </table></DIV>
           </td></tr>
         </table>
-<%--      </form>--%>
+      </div>
     </div>
   </td>
 </div>
+
+<jsp:include page="/footer.jspf"/>
