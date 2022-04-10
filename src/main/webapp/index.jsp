@@ -8,10 +8,10 @@
 
 <style type="text/css">
 	hr{
-		margin: 16px 1;
+		margin: 20px 0;
 	}
 	a{
-		font-size: 16px;
+		font-size: 20px;
 		font-weight: bold;
 	}
 	a:visited {
@@ -29,9 +29,9 @@
 		<br /><br />
 	</div>
 	<div align="center" style="color: #FFFFFF">
-		<br>Welcome to BigBucks Online!
-		<br>We provide professional wealth management services for those who want to invest.
-		<br>Please<a href="#" target="black"><a href="login.jsp"> log in </a> or <a href="signup.jsp"> register </a> the account to make stock purchases.</a>
+		<br><font size="5px">Welcome to BigBucks Online!</font>
+		<br><font size="4px">We provide professional wealth management services for those who want to invest.</font>
+		<br><font size="4px">Please<a href="#" target="black"><a href="login.jsp"> log in </a> or <a href="signup.jsp"> register </a> the account to make stock purchases.</a></font>
 		<br /><br /><br />
 	</div>
 
