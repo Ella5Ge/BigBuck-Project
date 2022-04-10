@@ -29,8 +29,8 @@ IBM AltoroJ
 <%--<div id="wrapper" style="width: 99%;">--%>
 <body style="background-color: #2F4F4F"></body>
 	<div align="center">
-		<br /><br /><br /><br />
-		<img src="images/loge.png" alt="image" width="486" height="640">
+		<br /><br /><br />
+		<img src="images/logo.png" alt="image" width="450" height="600">
 		<br />
 		<img src="images/BigBucks.png" alt="image" width="437" height="98">
 		<br /><br />
