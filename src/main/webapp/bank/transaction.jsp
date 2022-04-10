@@ -142,7 +142,7 @@
 					</tr>
 				</table>
 
-				<DIV ID='recent' STYLE='overflow: hidden; overflow-y: scroll; width:850px; height: 300px; padding:0px; margin: 0px' >
+				<DIV ID='recent' STYLE='overflow: hidden; overflow-y: scroll; width:90%; height: 300px; padding:0px; margin: 0px' >
 				<table cellspacing="0" cellpadding="3" rules="all" border="1" id="_ctl0__ctl0_Content_Main_MyTransactions" style="width:100%;border-collapse:collapse;">
 					<tr style="color:White;background-color:#BFD7DA;font-weight:bold;">
 						<td>Trade ID</td><td>Trade Time</td><td>Account ID</td><td>Action</td><td>Stock Symbol</td><td>Stock Name</td><td>Amount</td><td>Price Per Share</td>

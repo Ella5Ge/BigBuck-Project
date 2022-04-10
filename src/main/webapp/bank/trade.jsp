@@ -4,30 +4,36 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
          pageEncoding="ISO-8859-1"%>
 
-<%
-    /**
-     This application is for demonstration use only. It contains known application security
-     vulnerabilities that were created expressly for demonstrating the functionality of
-     application security testing tools. These vulnerabilities may present risks to the
-     technical environment in which the application is installed. You must delete and
-     uninstall this demonstration application upon completion of the demonstration for
-     which it is intended.
-
-     IBM DISCLAIMS ALL LIABILITY OF ANY KIND RESULTING FROM YOUR USE OF THE APPLICATION
-     OR YOUR FAILURE TO DELETE THE APPLICATION FROM YOUR ENVIRONMENT UPON COMPLETION OF
-     A DEMONSTRATION. IT IS YOUR RESPONSIBILITY TO DETERMINE IF THE PROGRAM IS APPROPRIATE
-     OR SAFE FOR YOUR TECHNICAL ENVIRONMENT. NEVER INSTALL THE APPLICATION IN A PRODUCTION
-     ENVIRONMENT. YOU ACKNOWLEDGE AND ACCEPT ALL RISKS ASSOCIATED WITH THE USE OF THE APPLICATION.
-
-     IBM AltoroJ
-     (c) Copyright IBM Corp. 2008, 2013 All Rights Reserved.
-     */
-%>
-
 <jsp:include page="/header.jspf"/>
+<jsp:include page="membertoc.jspf"/>
+<body style="background-color: #2F4F4F"></body>
+<style>
+    body {
+        background-color: gainsboro;
+        font-size: 12px;
+    }
+    .div_top_1 {
+        height: 5px;
+        width: 100%;
+    }
+    .main {
+        width: 90%;
+        height: 600px;
+        background-color: #FFFFFF;
+        margin: 0 auto;
+    }
+    .div_text {
+        width: 600px;
+        margin-left: 5%;
+        text-align: left;
+    }
+</style>
+<body>
+<div class="div_top_1">
 
-<div id="wrapper" style="width: 99%;">
-    <jsp:include page="membertoc.jspf"/>
+
+</div>
+<div class="main" id="wrapper">
     <td valign="top" colspan="3" class="bb">
 
         <%@ page import="com.ibm.security.appscan.altoromutual.util.DBUtil" %>
@@ -51,8 +57,11 @@
 
             <font style="bold" color="red"><%=error%></font>
             <form id="Form1" name="Form1" method="post" action="showHoldings">
-                <h2>Your Sharpe Ratio is <%=sharpeRatioStr%></h2>
-                <h2>Holdings</h2>
+                <div class="div_text">
+                    <h2>Below is your Holdings</h2>
+                </div>
+                <div align="center">
+                    <DIV ID='recent' STYLE='overflow: hidden; overflow-y: scroll; width:90%; height: 200px; padding:0px; margin: 0px' >
                 <table cellspacing="0" cellpadding="3" rules="all" border="1" id="_ctl0__ctl0_Content_Main_MyTransactions" style="width:100%;border-collapse:collapse;">
                     <tr style="color:White;background-color:#BFD7DA;font-weight:bold;">
                         <td>Account ID</td>
@@ -79,6 +88,22 @@
                         <!-- TODO PAGES: <td colspan="4"><span>1</span>&nbsp;<a href="javascript:__doPostBack('_ctl0$_ctl0$Content$Main$MyTransactions$_ctl54$_ctl1','')">2</a></td> -->
                     </tr>
                 </table>
+                        </DIV>
+                </div>
+                <div class="div_text">
+                    <br />
+                    <h2>Your Sharpe Ratio is <%=sharpeRatioStr%></h2>
+                    <br />
+                    <h2>What is the Sharpe Ratio?</h2>
+                    The Sharpe Ratio (or Sharpe Index or Modified Sharpe Ratio) is commonly used to gauge the performance of an investment by adjusting for its risk. The higher the ratio, the greater the investment return relative to the amount of risk taken, and thus, the better the investment.
+                    <br />
+                    <h2>Sharpe Ratio Formula?</h2>
+                    Sharpe Ratio = (Rx - Rf) / StdDev Rx
+                    <br>Where:
+                    <br>      Rx = Expected portfolio return
+                    <br>      Rf = Risk-free rate of return
+                    <br>      StdDev Rx = Standard deviation of portfolio return (or, volatility)
+                </div>
             </form>
 
         </div>
