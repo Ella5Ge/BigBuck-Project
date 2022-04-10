@@ -108,7 +108,8 @@
 							<th width=90>Price per share</th>
 						</tr>
 					</table>
-					<DIV ID='recent' STYLE='overflow: hidden; overflow-y: scroll; width:710px; height: 152px; padding:0px; margin: 0px' ><table border=1 cellpadding=2 cellspacing=0 width='700'>
+					<DIV ID='recent' STYLE='overflow: hidden; overflow-y: scroll; width:710px; height: 152px; padding:0px; margin: 0px' >
+						<table border=1 cellpadding=2 cellspacing=0 width='700'>
 						<%
 							Trade[] trades = DBUtil.getTradeRecords(null, null, new Account[]{DBUtil.getAccount(Long.valueOf(paramName))}, 10);
 							for (Trade trade: trades){
