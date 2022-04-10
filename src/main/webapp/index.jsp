@@ -26,6 +26,19 @@ IBM AltoroJ
 %>
 <title>Welcome Page</title>
 
+<style type="text/css">
+	hr{
+		margin: 16px 1;
+	}
+	a{
+		font-size: 16px;
+		font-weight: bold;
+	}
+	a:visited {
+		color: #b1f158;
+		text-decoration: none;
+	}
+</style>
 <%--<div id="wrapper" style="width: 99%;">--%>
 <body style="background-color: #2F4F4F"></body>
 	<div align="center">
@@ -38,7 +51,7 @@ IBM AltoroJ
 	<div align="center" style="color: #FFFFFF">
 		<br>Welcome to BigBucks Online!
 		<br>We provide professional wealth management services for those who want to invest.
-		<br>Please <a href="login.jsp"> log in </a> or <a href="signup.jsp"> register </a> the account to make stock purchases.
+		<br>Please<a href="#" target="black"><a href="login.jsp"> log in </a> or <a href="signup.jsp"> register </a> the account to make stock purchases.</a>
 		<br /><br /><br />
 	</div>
 
