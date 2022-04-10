@@ -10,6 +10,7 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.chart.renderer.xy.XYDotRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -355,7 +356,7 @@ public class ChartAPI extends ApplicationFrame {
      * @param inset x-axis
      */
     public static void createPlot(XYPlot plot, double inset) {
-        plot.setBackgroundPaint(Color.LIGHT_GRAY);
+        //plot.setBackgroundPaint(Color.LIGHT_GRAY);
         plot.setDomainGridlinePaint(Color.WHITE);
         plot.setRangeGridlinePaint(Color.WHITE);
         plot.setAxisOffset(new RectangleInsets(inset, inset, inset, inset));
@@ -372,22 +373,24 @@ public class ChartAPI extends ApplicationFrame {
     public static JFreeChart createOLSLineChart(String stockSymbol, String indexSymbol) throws ParseException {
         String subtitle = "Scatter graph of " + stockSymbol + " return vs. market return, with regression line";
         XYPlot plot = new XYPlot();
-        XYLineAndShapeRenderer lineRenderer = new XYLineAndShapeRenderer(true, false);
         plot.setDataset(0, createOLSDataset(stockSymbol, indexSymbol));
+        XYLineAndShapeRenderer lineRenderer = new XYLineAndShapeRenderer(true, false);
         plot.setRenderer(0,lineRenderer);
+        lineRenderer.setSeriesPaint(0, new Color(47, 79, 79));
 
-        XYDotRenderer dotRenderer = new XYDotRenderer();
         plot.setDataset(1,createStockVsIndexReturn(stockSymbol, indexSymbol));
+        XYDotRenderer dotRenderer = new XYDotRenderer();
         plot.setRenderer(1,dotRenderer);
         dotRenderer.setDotWidth(5);
         dotRenderer.setDotHeight(5);
+        dotRenderer.setSeriesPaint(0,new Color(131,139,139));
 
         //Axis
         plot.setDomainAxis(new NumberAxis(indexSymbol + " return"));
         plot.setRangeAxis(new NumberAxis(stockSymbol + " return"));
 
         JFreeChart chart = new JFreeChart(plot);
-        chart.setTitle(subtitle);
+        //chart.setTitle(null);
         return chart;
     }
 
@@ -401,12 +404,16 @@ public class ChartAPI extends ApplicationFrame {
      * @throws IOException for saveChartASPNG
      */
     public static JFreeChart createLineChart(XYDataset dataset, String subtitle, String x_label, String y_label) throws IOException {
-        JFreeChart chart = ChartFactory.createTimeSeriesChart(subtitle, x_label, y_label, dataset);
+        JFreeChart chart = ChartFactory.createTimeSeriesChart(null, x_label, y_label, dataset);
 
         chart.setBackgroundPaint(Color.WHITE);
 
         XYPlot plot = (XYPlot) chart.getPlot();
         createPlot(plot, 5.0);
+        XYLineAndShapeRenderer lineRenderer = new XYLineAndShapeRenderer(true, false);
+        plot.setRenderer(0,lineRenderer);
+        lineRenderer.setSeriesPaint(0, new Color(47, 79, 79));
+        lineRenderer.setSeriesPaint(1, new Color(205, 102, 29));
 
         DateAxis axis = (DateAxis) plot.getDomainAxis();
         SimpleDateFormat sdf3 = new SimpleDateFormat("MMM-yyyy");
@@ -434,6 +441,12 @@ public class ChartAPI extends ApplicationFrame {
         plot.setDomainAxis(dateAxis);
         createPlot(plot, 0.1);
 
+        XYDotRenderer dotRenderer = new XYDotRenderer();
+        plot.setRenderer(0,dotRenderer);
+        dotRenderer.setDotWidth(5);
+        dotRenderer.setDotHeight(5);
+        dotRenderer.setSeriesPaint(0,new Color(47, 79, 79));
+
         DateAxis axis = (DateAxis) plot.getDomainAxis();
 
         SimpleDateFormat sdf3 = new SimpleDateFormat("dd-MM-yyyy");
@@ -454,11 +467,17 @@ public class ChartAPI extends ApplicationFrame {
         String subtitle = stockSymbol + " Today's Return vs. Yesterday's";
         String x_label = "Rate of Return (-1)";
         String y_label = "Rate of Return";
-        JFreeChart chart = ChartFactory.createScatterPlot(subtitle, x_label, y_label, dataset);
+        JFreeChart chart = ChartFactory.createScatterPlot(null, x_label, y_label, dataset);
         chart.setBackgroundPaint(Color.WHITE);
 
         XYPlot plot = (XYPlot) chart.getPlot();
         createPlot(plot, 0.1);
+
+        XYDotRenderer dotRenderer = new XYDotRenderer();
+        plot.setRenderer(0,dotRenderer);
+        dotRenderer.setDotWidth(5);
+        dotRenderer.setDotHeight(5);
+        dotRenderer.setSeriesPaint(0,new Color(47, 79, 79));
 
         return chart;
     }
@@ -475,18 +494,20 @@ public class ChartAPI extends ApplicationFrame {
         String subtitle = stockSymbol + " Histogram of Rate of Return";
         String x_label = "Return Bin (%)";
         String y_label = "Frequency";
-        JFreeChart chart = ChartFactory.createBarChart(subtitle, x_label, y_label,dataset);
+        JFreeChart chart = ChartFactory.createBarChart(null, x_label, y_label,dataset);
         chart.setBackgroundPaint(Color.WHITE);
         CategoryPlot categoryplot = chart.getCategoryPlot();
-        categoryplot.setBackgroundPaint(Color.lightGray);
+        //categoryplot.setBackgroundPaint(Color.lightGray);
         categoryplot.setRangeGridlinePaint(Color.WHITE);
         categoryplot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
         categoryplot.setDomainCrosshairVisible(true);
         categoryplot.setRangeCrosshairVisible(true);
 
+        ((BarRenderer) categoryplot.getRenderer()).setBarPainter(new StandardBarPainter());
         BarRenderer renderer1 = (BarRenderer) chart.getCategoryPlot().getRenderer();
         renderer1.setMaximumBarWidth(3);
         renderer1.setItemMargin(0.0);
+        renderer1.setSeriesPaint(0,new Color(47, 79, 79));
 
         return chart;
     }

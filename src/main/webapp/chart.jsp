@@ -42,7 +42,7 @@
                             <select size="1" id="graphType" name="graphType">
                                 <option value="chart1">Stock Price Line Chart</option>
                                 <option value="chart2">Stock Return Scatter Chart</option>
-                                <option value="chart3">Stock Auto Correlation Scatter Chart</option>
+                                <option value="chart3">Stock AR(1) Scatter Chart</option>
                                 <option value="chart4">Stock Return Histogram</option>
                                 <option value="chart5">Stock vs SPY Index Cumulative Return</option>
                                 <option value="chart6">Stock vs SPY Index Daily Return</option>
