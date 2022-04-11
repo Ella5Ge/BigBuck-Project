@@ -52,7 +52,7 @@
           <table border="0">
           <tr><td>
             <br><b>Users' Sharpe Ratio</b>
-            <DIV ID='userSharpeRatio' STYLE='overflow: hidden; overflow-y: scroll; width:70%; height: 150px; padding:0px; margin: 0px'>
+            <DIV ID='userSharpeRatio' STYLE='overflow: hidden; overflow-y: scroll; width:100%; height: 150px; padding:0px; margin: 0px'>
               <table border=1 cellpadding=2 cellspacing=0 id="_ctl0__ctl0_Content_Main_MyTransactions" style="width:100%;border-collapse:collapse;">
               <tr style="color:White;background-color:#BFD7DA;font-weight:bold;">
                 <td>Account ID</td><td>Sharpe Ratio</td>
@@ -74,7 +74,7 @@
           </td></tr>
           <tr><td>
             <br><b>User's Holding Records</b>
-            <DIV ID='userHolding' STYLE='overflow: hidden; overflow-y: scroll; width:90%; height: 220px; padding:0px; margin: 0px'>
+            <DIV ID='userHolding' STYLE='overflow: hidden; overflow-y: scroll; width:100%; height: 220px; padding:0px; margin: 0px'>
             <table border=1 cellpadding=2 cellspacing=0 id="_ctl0__ctl0_Content_Main_MyTransactions" style="width:100%;border-collapse:collapse;">
               <tr style="color:White;background-color:#BFD7DA;font-weight:bold;">
                 <td>Account ID</td><td>Stock Symbol</td><td>Stock Name</td><td>Shares Holding</td><td>Price Per Share</td>
@@ -100,7 +100,7 @@
           </td></tr>
           <tr><td>
             <br><b>Today's Trade Records</b>
-            <DIV ID='record' STYLE='overflow: hidden; overflow-y: scroll; width:90%; height: 220px; padding:0px; margin: 0px'>
+            <DIV ID='record' STYLE='overflow: hidden; overflow-y: scroll; width:100%; height: 220px; padding:0px; margin: 0px'>
               <table border=1 cellpadding=2 cellspacing=0 id="_ctl0__ctl0_Content_Main_MyTransactions" style="width:100%;border-collapse:collapse;">
               <tr style="color:White;background-color:#BFD7DA;font-weight:bold;">
                 <td>Trade ID</td><td>Account ID</td><td>Description</td><td>Stock Symbol</td><td>Stock Name</td><td>Shares</td><td>Price Per Share</td>
