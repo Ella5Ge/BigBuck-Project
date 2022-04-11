@@ -62,14 +62,12 @@
                 if (allAccounts != null) {
                   for (Account account: allAccounts) {
                     double sharpe_ratio = ConnectYahooFinance.getSharpeRatio(new Account[]{account});
-                    if (!Double.isInfinite(sharpe_ratio)) {
-                      String sharpeRatioStr = String.format("%.2f", sharpe_ratio);
+                    String sharpeRatioStr = String.format("%.2f", sharpe_ratio);
               %>
               <tr>
                 <td width=150><%=account.getAccountId()%></td>
                 <td width=150 align=right><%=sharpeRatioStr%></td>
               </tr>
-              <% } %>
               <% } %>
               <% } %>
             </table></DIV>
