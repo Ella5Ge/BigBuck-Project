@@ -33,7 +33,7 @@
 
 	.main {
 		width: 417.683px;
-		height: 480px;
+		height: 440px;
 		background-color: #FFFFFF;
 		margin: 0 auto;
 
@@ -143,9 +143,13 @@
 
 			if (error != null && error.trim().length() > 0){
 				request.getSession().removeAttribute("loginError");
-				out.print(error);
-			}
 		%>
+			<script type="text/javascript" language="javascript">
+			alert("Login Failed: We're sorry, but this username or password was not found in our system. Please try again.");
+			</script>
+			<%
+			}
+			%>
 		</span></p>
 		<form action="doLogin" method="post" name="login" id="login" onsubmit="return (confirminput(login));">
 			<div class="div_input_account">

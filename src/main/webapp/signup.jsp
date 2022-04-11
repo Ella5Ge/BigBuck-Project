@@ -142,16 +142,6 @@
 
         <div class="div_empty">
         </div>
-        <p><span id="_ctl0__ctl0_Content_Main_message" style="color:#FF0066;font-size:12pt;font-weight:bold;">
-                <%
-                    java.lang.String error = (String)request.getSession(true).getAttribute("loginError");
-                    if (error != null && error.trim().length() > 0){
-                        request.getSession().removeAttribute("loginError");
-                        out.print(error);
-                    }
-                %>
-            </span></p>
-
         <form action="SignupServlet" method="post" name="signup" id="signup" onsubmit="return (confirminput(signup));">
             <div class="div_input_account">
                 <input class="input_account" type="text" id="new_uid" name="new_uid" placeholder="Username" value="${userName }"/>
@@ -178,7 +168,7 @@
             </div>
 
             <div class="div_input_repwd">
-                <input class="input_repwd" type="password" id="new_repassw" name="new_repassw" placeholder="Re-enter Password" value="${pwd }"/>
+                <input class="input_repwd" type="password" id="new_passw2" name="new_passw2" placeholder="Re-enter Password" value="${pwd }"/>
             </div>
             <div class="div_empty">
             </div>
@@ -219,9 +209,8 @@
                 myform.new_passw2.focus();
                 alert("You must re-confirm the password");
                 return (false);
-            } else if (myform.new_passw.value != myform.new_passw2.value){
-                myform.new_passw2.focus();
-                alert ("Your passwords do not match. Please try again.");
+            } else if (myform.new_passw.value != myform.new_passw2.value) {
+                alert("Your passwords do not match. Please try again.");
                 return (false);
             }
         }
