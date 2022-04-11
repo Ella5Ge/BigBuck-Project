@@ -33,7 +33,7 @@
 
 	.main {
 		width: 417.683px;
-		height: 440px;
+		height: 460px;
 		background-color: #FFFFFF;
 		margin: 0 auto;
 
