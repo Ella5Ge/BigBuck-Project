@@ -31,7 +31,7 @@ public class TestChart {
         driver.get(baseUrl);
         // get the actual value of the title
         String actualTitle = driver.getTitle();
-        String expectedTitle = "Altoro Mutual";
+        String expectedTitle = "Welcome Page";
 
         /*
          * compare the actual title of the page with the expected one and print
@@ -56,7 +56,7 @@ public class TestChart {
         System.out.println("222222");
         WebElement username = driver.findElement(By.id("uid"));
         System.out.println("333333");
-        WebElement password = driver.findElement(By.id("passw"));
+        WebElement password = driver.findElement(By.name("passw"));
         System.out.println("444444");
         username.sendKeys(uid);
         Thread.sleep(1000);
@@ -67,9 +67,9 @@ public class TestChart {
         WebElement loginButton = driver.findElement(By.name("btnSubmit"));
         loginButton.click();
 
-        String expectedTitle = "Welcome to Altoro Mutual Online.";
+        String expectedTitle = "BigBucks Home Page";
 
-        assertEquals(driver.findElement(By.xpath("//div/h2")).getText(), expectedTitle);
+        assertEquals(driver.getTitle(), expectedTitle);
 
         driver.close();
     }
@@ -133,7 +133,7 @@ public class TestChart {
 
         String stockSymbol = "FB";
         String graphType = "chart3";
-        String expectedTitle = stockSymbol + " Auto Correlation Scatter Chart";
+        String expectedTitle = stockSymbol + " Today's Rate of Return vs Yesterday's";
 
         symbol.sendKeys(stockSymbol);
         Thread.sleep(1000);

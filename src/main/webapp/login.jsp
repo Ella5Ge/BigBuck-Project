@@ -165,7 +165,7 @@
 			</div>
 
 			<div class="div_button_login">
-				<input class="button_login" type="submit" value="login"/>
+				<input class="button_login" type="submit" name="btnSubmit" value="login"/>
 			</div>
 			<br /><br />
 			<div align="center">

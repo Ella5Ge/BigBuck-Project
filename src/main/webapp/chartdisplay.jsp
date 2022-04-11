@@ -53,7 +53,7 @@
                     }
                     else if (graphType.equals("chart3")) {
                         chart = ServletUtilities.saveChartAsPNG(ChartAPI.getStockAutoCorrChart(stockSymbol),800,500,null);
-                        title = stockSymbol + "  Today's Rate of Return vs Yesterday's";
+                        title = stockSymbol + " Today's Rate of Return vs Yesterday's";
                     }
                     else if (graphType.equals("chart4")) {
                         chart = ServletUtilities.saveChartAsPNG(ChartAPI.getFreqHistogram(stockSymbol),800,500,null);
