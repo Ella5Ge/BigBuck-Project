@@ -199,6 +199,10 @@
                 && myform.new_uid.value.length && myform.new_passw.value.length
                 && myform.new_passw2.value.length && myform.new_passw.value == myform.new_passw2.value) {
                 return (true);
+            } else if (!(myform.new_uid.value.length)) {
+                myform.new_uid.focus();
+                alert("You must enter a valid username");
+                return (false);
             } else if (!(myform.new_first.value.length)) {
                 myform.reset();
                 myform.new_first.focus();
@@ -207,10 +211,6 @@
             } else if (!(myform.new_last.value.length)) {
                 myform.new_last.focus();
                 alert ("You must enter a valid last name");
-                return (false);
-            } else if (!(myform.new_uid.value.length)) {
-                myform.new_uid.focus();
-                alert("You must enter a valid username");
                 return (false);
             } else if (!(myform.new_passw.value.length)) {
                 myform.new_passw.focus();
