@@ -62,6 +62,12 @@ public class TradeServlet extends HttpServlet {
             request.setAttribute("message", message);
             dispatcher.forward(request, response);
             return;
+        } catch (NullPointerException e2) {
+            message = "Invalid Stock Symbol! Please enter again.";
+            RequestDispatcher dispatcher = request.getRequestDispatcher("stocks.jsp");
+            request.setAttribute("message", message);
+            dispatcher.forward(request, response);
+            return;
         }
 
         if (message == null) {

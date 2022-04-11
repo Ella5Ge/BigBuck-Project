@@ -228,8 +228,12 @@ public class ConnectYahooFinance{
         ArrayList<Double> weight = getWeight(holdings);
 
         // calculate risk free rate
-        ArrayList<StockData> treasury_data = getHistoryData("%5ETNX","2022-04-05", null);
-        double rf = treasury_data.get(treasury_data.size()-1).getAdj_close() / 100;
+        ArrayList<StockData> treasury_data = new ArrayList<>();
+        treasury_data = getHistoryData("%5ETNX","2022-04-05", null);
+        double rf = 0.025;
+        if (treasury_data != null) {
+            rf = treasury_data.get(treasury_data.size()-1).getAdj_close() / 100;
+        }
 
         // calculate portfolio's rate of return
         ArrayList<Double> averages = new ArrayList<Double>(); //avg return for all stocks
@@ -273,6 +277,9 @@ public class ConnectYahooFinance{
         Holding[] holdings = DBUtil.getHolding(accounts);
         ArrayList<StockData> list = null;
         ArrayList<Double> ror = new ArrayList<Double>();
+        ArrayList<StockData> treasury_data = new ArrayList<>();
+        treasury_data = getHistoryData("%5ETNX","2022-04-05", null);
+        System.out.println(treasury_data);
         //ror = getROR("AAPL", "2022-03-01");
         //System.out.println(ror);
         //System.out.println(ror.size());
