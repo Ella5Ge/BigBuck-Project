@@ -68,7 +68,7 @@
 			<div align="center">
 			<table border="0">
 				<tr><td colspan=2>
-					<table cellSpacing="0" cellPadding="1" width="700" border="1" id="_ctl0__ctl0_Content_Main_MyTransactions" style="width:100%;border-collapse:collapse;">
+					<table cellSpacing="0" cellPadding="1" width=90% border="1" id="_ctl0__ctl0_Content_Main_MyTransactions" style="width:100%;border-collapse:collapse;">
 						<tr>
 							<th colSpan="2">
 								Balance Detail</th></tr>
@@ -99,7 +99,7 @@
 				</td></tr>
 				<tr><td>
 					<br><b>10 Most Recent Trade Records</b>
-					<DIV ID='recent' STYLE='overflow: hidden; overflow-y: scroll; width:90%; height: 152px; padding:0px; margin: 0px' >
+					<DIV ID='recent' STYLE='overflow: hidden; overflow-y: scroll; width:100%; height: 152px; padding:0px; margin: 0px' >
 						<table cellspacing="0" cellpadding="3" rules="all" border="1" id="_ctl0__ctl0_Content_Main_MyTransactions" style="width:100%;border-collapse:collapse;">
 							<tr style="color:White;background-color:#BFD7DA;font-weight:bold;">
 								<td>Date</td><td>Description</td><td>Stock Symbol</td><td>Stock Name</td><td>Amount</td><td>Price Per Share</td>
@@ -112,12 +112,12 @@
 								String price = new DecimalFormat(dollarFormat).format(dblPrice);
 								String date = new SimpleDateFormat("yyyy-MM-dd").format(trade.getDate());
 						%>
-						<tr><td width=90><%=date%></td>
-							<td width=90><%=trade.getTradeType()%></td>
-							<td width=90><%=trade.getStockSymbol()%></td>
-							<td width=90><%=trade.getStockName()%></td>
-							<td width=90 align=right><%=trade.getAmount()%></td>
-							<td width=90 align=right><%=price%></td>
+						<tr><td><%=date%></td>
+							<td><%=trade.getTradeType()%></td>
+							<td><%=trade.getStockSymbol()%></td>
+							<td><%=trade.getStockName()%></td>
+							<td align=right><%=trade.getAmount()%></td>
+							<td align=right><%=price%></td>
 						</tr>
 						<% } %>
 					</table></DIV>
@@ -125,7 +125,7 @@
 				<tr><td>
 					<br><b>Holding List</b>
 
-					<DIV ID='hold' STYLE='overflow: hidden; overflow-y: scroll; width:90%; height: 152px; padding:0px; margin: 0px' >
+					<DIV ID='hold' STYLE='overflow: hidden; overflow-y: scroll; width:100%; height: 152px; padding:0px; margin: 0px' >
 						<table cellspacing="0" cellpadding="3" rules="all" border="1" id="_ctl0__ctl0_Content_Main_MyTransactions" style="width:100%;border-collapse:collapse;">
 							<tr style="color:White;background-color:#BFD7DA;font-weight:bold;">
 								<td>Ticker Symbol</td><td>Stock Name</td><td>Shares Holding</td><td>Price per share</td>
@@ -137,10 +137,10 @@
 								String dollarFormat2 = (dblcostPrice<1)?"$0.00":"$.00";
 								String costPrice = new DecimalFormat(dollarFormat2).format(dblcostPrice);
 						%>
-						<tr><td width=90><%=holding.getStockSymbol()%></td>
-							<td width=90><%=holding.getStockName()%></td>
-							<td width=90 align=right><%=holding.getHoldingAmount()%></td>
-							<td width=90 align=right><%=costPrice%></td>
+						<tr><td><%=holding.getStockSymbol()%></td>
+							<td><%=holding.getStockName()%></td>
+							<td align=right><%=holding.getHoldingAmount()%></td>
+							<td align=right><%=costPrice%></td>
 						</tr>
 						<% } %>
 					</table></DIV>
