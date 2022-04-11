@@ -140,20 +140,11 @@
 		<p><span id="_ctl0__ctl0_Content_Main_message" style="color:#FF0066;font-size:12pt;font-weight:bold;">
 		<%
 			java.lang.String error = (String)request.getSession(true).getAttribute("loginError");
-			String expectedError = "Login Failed: We're sorry, but this username or password was not found in our system. Please try again.";
-			String expectedSuccess = "Successful Sign up!";
-			if (error != null && error.trim().length() > 0 && !error.equals(expectedSuccess)){
-				request.getSession().removeAttribute("loginError");
-		%>
-			<script type="text/javascript" language="javascript">
-				alert(<%=error%>);
-			</script>
-			<%
-			} else if (error != null && error.trim().length() > 0 && error.equals(expectedSuccess)) {
+			if (error != null && error.trim().length() > 0) {
 				request.getSession().removeAttribute("loginError");
 				out.print(error);
 			}
-			%>
+		%>
 		</span></p>
 		<form action="doLogin" method="post" name="login" id="login" onsubmit="return (confirminput(login));">
 			<div class="div_input_account">
