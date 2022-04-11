@@ -1,30 +1,36 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 
-<%
-/**
- This application is for demonstration use only. It contains known application security
-vulnerabilities that were created expressly for demonstrating the functionality of
-application security testing tools. These vulnerabilities may present risks to the
-technical environment in which the application is installed. You must delete and
-uninstall this demonstration application upon completion of the demonstration for
-which it is intended. 
-
-IBM DISCLAIMS ALL LIABILITY OF ANY KIND RESULTING FROM YOUR USE OF THE APPLICATION
-OR YOUR FAILURE TO DELETE THE APPLICATION FROM YOUR ENVIRONMENT UPON COMPLETION OF
-A DEMONSTRATION. IT IS YOUR RESPONSIBILITY TO DETERMINE IF THE PROGRAM IS APPROPRIATE
-OR SAFE FOR YOUR TECHNICAL ENVIRONMENT. NEVER INSTALL THE APPLICATION IN A PRODUCTION
-ENVIRONMENT. YOU ACKNOWLEDGE AND ACCEPT ALL RISKS ASSOCIATED WITH THE USE OF THE APPLICATION.
-
-IBM AltoroJ
-(c) Copyright IBM Corp. 2008, 2013 All Rights Reserved.
-*/
-%> 
-    
 <jsp:include page="/header.jspf"/>
+<jsp:include page="membertoc.jspf"/>
+<body style="background-color: #2F4F4F"></body>
+<style>
+	body {
+		background-color: gainsboro;
+		font-size: 12px;
+	}
+	.div_top_1 {
+		height: 5px;
+		width: 100%;
+	}
+	.main {
+		width: 90%;
+		height: 300px;
+		background-color: #FFFFFF;
+		margin: 0 auto;
+	}
+	.div_text {
+		width: 600px;
+		margin-left: 5%;
+		text-align: left;
+	}
+</style>
+<body>
+<div class="div_top_1">
 
-<div id="wrapper" style="width: 99%;">
-	<jsp:include page="membertoc.jspf"/>
+
+</div>
+<div class="main" id="wrapper" style="width: 99%;">
     <td valign="top" colspan="3" class="bb">
 		<div class="fl" style="width: 99%;">
 		
@@ -38,7 +44,8 @@ IBM AltoroJ
 		%>
 		
 		<h1>Customize Site Language</h1>
-		
+
+			<div class="div_text">
 		<form method="post">
 		  <p>
 		  Current Language: <%=(request.getParameter("lang")==null)?"":request.getParameter("lang")%>
@@ -48,11 +55,11 @@ IBM AltoroJ
 		  You can change the language setting by choosing:
 		  </p>
 		  <p>
-		  <a id="HyperLink1" href="./customize.jsp?content=customize.jsp&lang=international">International</a>
-		  <a id="HyperLink2" href="./customize.jsp?content=customize.jsp&lang=english">English</a>
+			  <br><font color="#00008b"><a id="HyperLink1" href="./customize.jsp?content=customize.jsp&lang=international">International</a></font>
+			  <br><font color="#00008b"><a id="HyperLink2" href="./customize.jsp?content=customize.jsp&lang=english">English</a></font>
 		  </p>
 		</form>
-		
+			</div>
 		</div>
     </td>	
 </div>
