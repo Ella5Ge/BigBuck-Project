@@ -11,9 +11,10 @@ import org.openqa.selenium.support.ui.Select;
 
 public class TestChart {
     WebDriver driver = new FirefoxDriver();
-    String baseUrl = "http://localhost:8080/fintech512_altoroj_war_exploded/";
-    String chartUrl = "http://localhost:8080/fintech512_altoroj_war_exploded//chart.jsp";
-    String loginUrl = "http://localhost:8080/fintech512_altoroj_war_exploded//login.jsp";
+//    String baseUrl = "http://localhost:8080/fintech512_altoroj_war_exploded/";
+    String baseUrl = "http://meowth.colab.duke.edu:8080/altoroj/";
+    String chartUrl = baseUrl + "chart.jsp";
+    String loginUrl = baseUrl + "login.jsp";
     String uid = "wl239";
     String passw = "1111";
 
