@@ -53,7 +53,7 @@
                     }
                     else if (graphType.equals("chart3")) {
                         chart = ServletUtilities.saveChartAsPNG(ChartAPI.getStockAutoCorrChart(stockSymbol),800,500,null);
-                        title = stockSymbol + " Auto Correlation Scatter Chart";
+                        title = stockSymbol + "  Today's Rate of Return vs Yesterday's";
                     }
                     else if (graphType.equals("chart4")) {
                         chart = ServletUtilities.saveChartAsPNG(ChartAPI.getFreqHistogram(stockSymbol),800,500,null);
@@ -81,7 +81,7 @@
             <br>
             <br>
             <form method="post" name="chart" action="chart" id="chart">
-                <input type="submit" value="Back to Chart">
+                <input type="submit" value="Back to Chart" name="backButton">
             </form>
         </div>
     </td>

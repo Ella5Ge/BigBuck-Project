@@ -29,7 +29,7 @@
 		<ul class="list">
 			<li><a href="<%=request.getContextPath()%>/bank/main.jsp">Account Summary</a></li>
 			<li><a href="<%=request.getContextPath()%>/bank/transaction.jsp">Account Inquiry</a></li>
-			<li><a href="<%=request.getContextPath()%>/bank/trade.jsp">Trade Report</a></li>
+			<li><a href="<%=request.getContextPath()%>/bank/tradereport.jsp">Trade Report</a></li>
 			<li><a href="<%=request.getContextPath()%>/chart.jsp">Chart Report</a></li>
 			<li><a href="<%=request.getContextPath()%>/bank/stocks.jsp">Stock Trading</a></li>
 

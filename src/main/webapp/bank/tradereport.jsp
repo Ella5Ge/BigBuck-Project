@@ -48,7 +48,16 @@
                 String error = "";
 
                 double sharpe_ratio = ConnectYahooFinance.getSharpeRatio(user.getAccounts());
-                String sharpeRatioStr = String.format("%.2f", sharpe_ratio);
+                String sharpeRatioStr = null;
+                if (Double.isNaN(sharpe_ratio)) {
+                    sharpeRatioStr = "You did not have any stock holdings.";
+                }
+                else if (Double.isInfinite(sharpe_ratio)) {
+                    sharpeRatioStr = "Sharpe Ratio is unavailable now. Please check it next workday.";
+                }
+                else {
+                    sharpeRatioStr = "Your Sharpe Ratio is " + String.format("%.2f", sharpe_ratio);
+                }
 
                 Holding[] holdings = DBUtil.getHolding(user.getAccounts());
             %>
@@ -92,7 +101,7 @@
                 </div>
                 <div class="div_text">
                     <br />
-                    <h2>Your Sharpe Ratio is <%=sharpeRatioStr%></h2>
+                    <h2><%=sharpeRatioStr%></h2>
                     <br />
                     <h2>What is the Sharpe Ratio?</h2>
                     The Sharpe Ratio (or Sharpe Index or Modified Sharpe Ratio) is commonly used to gauge the performance of an investment by adjusting for its risk. The higher the ratio, the greater the investment return relative to the amount of risk taken, and thus, the better the investment.

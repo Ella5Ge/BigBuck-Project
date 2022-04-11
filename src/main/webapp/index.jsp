@@ -31,7 +31,7 @@
 	<div align="center" style="color: #FFFFFF">
 		<br><font size="5px">Welcome to BigBucks Online!</font>
 		<br><font size="4px">We provide professional wealth management services for those who want to invest.</font>
-		<br><font size="4px">Please<a href="#" target="black"><a href="login.jsp"> log in </a> or <a href="signup.jsp"> register </a> the account to make stock purchases.</a></font>
+		<br><font size="4px">Please<a href="#" target="black"><a href="login.jsp"> log in </a> or<a href="signup.jsp"> register </a> the account to make stock purchases.</a></font>
 		<br /><br /><br />
 	</div>
 
