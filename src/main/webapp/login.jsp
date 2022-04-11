@@ -140,14 +140,18 @@
 		<p><span id="_ctl0__ctl0_Content_Main_message" style="color:#FF0066;font-size:12pt;font-weight:bold;">
 		<%
 			java.lang.String error = (String)request.getSession(true).getAttribute("loginError");
-
-			if (error != null && error.trim().length() > 0){
+			String expectedError = "Login Failed: We're sorry, but this username or password was not found in our system. Please try again.";
+			String expectedSuccess = "Successful Sign up!";
+			if (error != null && error.trim().length() > 0 && !error.equals(expectedSuccess)){
 				request.getSession().removeAttribute("loginError");
 		%>
 			<script type="text/javascript" language="javascript">
-			alert("Login Failed: We're sorry, but this username or password was not found in our system. Please try again.");
+				alert(<%=error%>);
 			</script>
 			<%
+			} else if (error != null && error.trim().length() > 0 && error.equals(expectedSuccess)) {
+				request.getSession().removeAttribute("loginError");
+				out.print(error);
 			}
 			%>
 		</span></p>
